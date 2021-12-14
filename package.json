@@ -1,0 +1,28 @@
+{
+  "name": "openharmony-polyfill",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "files": [
+    "src"
+  ],
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "scripts": {
+    "lint": "eslint src/*",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/originjs/openharmony-polyfill.git"
+  },
+  "author": "",
+  "license": "MulanPSL-2.0",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.7.0",
+    "@typescript-eslint/parser": "^5.7.0",
+    "eslint": "^8.4.1",
+    "eslint-plugin-node": "^11.1.0"
+  }
+}
