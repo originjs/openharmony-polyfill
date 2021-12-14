@@ -18,7 +18,7 @@ export default class XMLHttpRequest extends EventTarget {
     #httpRequest;
     #url;
     #options;
-    #responesHeaders;
+    #responseHeaders;
     #readyState;
     #response;
     #responseText;
@@ -108,10 +108,10 @@ export default class XMLHttpRequest extends EventTarget {
             if (!err) {
                 this.#readyState = StatusCode.HEADERS_RECEIVED;
                 //TODO incalid json
-                this.#responesHeaders = JSON.parse(data.header);
+                this.#responseHeaders = JSON.parse(data.header);
             }
         });
-        this.readyState = StatusCode.OPENED;
+        this.#readyState = StatusCode.OPENED;
     }
 
     /**
@@ -177,7 +177,7 @@ export default class XMLHttpRequest extends EventTarget {
      * Returns all the response headers, separated by CRLF, as a string, or null if no response has been received.
      */
     getAllResponseHeaders() {
-        return this.#responesHeaders;
+        return this.#responseHeaders;
     }
 
     /**
@@ -187,10 +187,10 @@ export default class XMLHttpRequest extends EventTarget {
      */
     getResponseHeader(name) {
         name = name.toLowerCase();
-        if (!(name in this.#responesHeaders)) {
+        if (!(name in this.#responseHeaders)) {
             return undefined;
         }
-        return this.#responesHeaders[name];
+        return this.#responseHeaders[name];
     }
     
     onloadend(e) { }
