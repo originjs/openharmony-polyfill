@@ -1,4 +1,3 @@
-import Storage from 'super-class/Storage'
 import dataStorage from '@ohos.data.storage'
 import featureAbility from '@ohos.ability.featureAbility'
 

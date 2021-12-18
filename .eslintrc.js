@@ -29,7 +29,8 @@ module.exports = {
     },
     "globals": {
       "WebSocket": true,
-      "fetch": true
+      "fetch": true,
+      "Storage": true
     }
   }
   
