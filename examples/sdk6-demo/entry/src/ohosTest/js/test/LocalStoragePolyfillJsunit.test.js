@@ -1,4 +1,3 @@
-// @ts-nocheck
 import 'openharmony-polyfill'
 import {describe, expect, it} from 'deccjsunit/index'
 
