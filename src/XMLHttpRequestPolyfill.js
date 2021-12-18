@@ -96,6 +96,7 @@ export default class XMLHttpRequest extends EventTarget {
      *      The optional user name to use for authentication purposes; by default, this is the null value.
      * @param {*} password 
      *      The optional password to use for authentication purposes; by default, this is the null value.
+     * @deprecated https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication#access_using_credentials_in_the_url
      */
     open(method, url, async, user, password) {
         if (async === false) {

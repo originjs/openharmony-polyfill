@@ -23,6 +23,19 @@ struct Index {
             this.response = res.statusText
           });
       })
+
+      Button('Use fetch').onClick(() => {
+        this.response = 'request...'
+        console.log('=================')
+        console.log(typeof fetch)
+        fetch('https://developer.harmonyos.com/cn/develop/')
+          .then(res =>{
+            console.log('-----------')
+            console.log(res.data)
+            this.response = res.statusText;
+          });
+      })
+
       Text(this.response)
         .fontSize(16)
 
