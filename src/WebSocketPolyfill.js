@@ -25,6 +25,8 @@ class _WebSocket {
   #extensions;
   #protocol;
   #readyState;
+  #header = {};
+  #listeners = {};
 
   /**
    *The WebSocket() constructor returns a new WebSocket object.
@@ -40,7 +42,7 @@ class _WebSocket {
     }
 
     this[createWS]();
-    this[connect](header);
+    this[connect](this.#header);
     this[openHandler]();
     this[messageHandler]();
     this[closeHandler]();
@@ -136,8 +138,7 @@ class _WebSocket {
   }
 
   addEventListener(type, listener) {
-    if ((this, _listeners == undefined)) this._listeners = {};
-    let listeners = this._listeners;
+    let listeners = this.#listeners;
     if (listeners[type] === undefined) {
       listeners[type] = [];
     }
@@ -147,8 +148,7 @@ class _WebSocket {
   }
 
   dispatchEvent(event) {
-    if (this._listeners === undefined) return;
-    let listeners = this._listeners;
+    let listeners = this.#listeners;
     var listenerArray = listeners[event.type];
     if (listenerArray !== undefined) {
       event.target = this;

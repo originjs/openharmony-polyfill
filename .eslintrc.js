@@ -26,6 +26,10 @@ module.exports = {
         // catches unused variables but not args.
         { varsIgnorePattern: '.*', args: 'none' }
       ]
+    },
+    "globals": {
+      "WebSocket": true,
+      "fetch": true
     }
   }
   
