@@ -18,6 +18,14 @@
       "tv",
       "wearable"
     ],
+    "reqPermissions": [{
+      "name": "ohos.permission.INTERNET",
+      "reason": "http",
+      "usedScene": {
+        "ability": ["org.originjs.openharmony.polyfilldemo.MainAbility"],
+        "when": "always"
+      }
+    }],
     "distro": {
       "deliveryWithInstall": true,
       "moduleName": "entry",

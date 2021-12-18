@@ -1,5 +1,14 @@
 <div class="container">
     <text class="title">
-        {{ $t('strings.hello') }} {{ title }}
+        OpenHarmony Polyfill
+    </text>
+    <button type="capsule" class="button" onclick="onClickAxios">
+        Use Axios
+    </button>
+    <button type="capsule" class="button" onclick="onClickFetch">
+        Use Fetch
+    </button>
+    <text>
+        {{ result }}
     </text>
 </div>

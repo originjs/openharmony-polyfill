@@ -7,9 +7,13 @@
 }
 
 .title {
-    font-size: 40px;
+    font-size: 30px;
     color: #000000;
     opacity: 0.9;
+}
+
+.button {
+    margin: 5fp;
 }
 
 @media screen and (device-type: tablet) and (orientation: landscape) {
