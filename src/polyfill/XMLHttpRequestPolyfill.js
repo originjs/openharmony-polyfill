@@ -1,5 +1,5 @@
 import http from '@ohos.net.http';
-import { EventTarget } from './EventTarget';
+import { EventTarget } from '../super-class/EventTarget';
 
 const StatusCode = {
     UNSENT: 0,
@@ -9,12 +9,12 @@ const StatusCode = {
     DONE: 4,
 }
 /**
- * XMLHttpRequest (XHR) objects are used to interact with servers. You can retrieve data from a URL 
- * without having to do a full page refresh. This enables a Web page to update just part of a page 
+ * XMLHttpRequest (XHR) objects are used to interact with servers. You can retrieve data from a URL
+ * without having to do a full page refresh. This enables a Web page to update just part of a page
  * without disrupting what the user is doing.
  * @see https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest
  */
-export default class XMLHttpRequest extends EventTarget {
+class XMLHttpRequest extends EventTarget {
     #httpRequest;
     #url;
     #options;
@@ -42,7 +42,7 @@ export default class XMLHttpRequest extends EventTarget {
     }
 
     /**
-     * Returns an ArrayBuffer, Blob, Document, JavaScript object, or a DOMString, depending on the 
+     * Returns an ArrayBuffer, Blob, Document, JavaScript object, or a DOMString, depending on the
      * value of XMLHttpRequest.responseType, that contains the response entity body.
      */
     get response() {
@@ -50,7 +50,7 @@ export default class XMLHttpRequest extends EventTarget {
     }
 
     /**
-     * Returns a DOMString that contains the response to the request as text, or null if the 
+     * Returns a DOMString that contains the response to the request as text, or null if the
      * request was unsuccessful or has not yet been sent.
      */
     get responseText() {
@@ -70,8 +70,8 @@ export default class XMLHttpRequest extends EventTarget {
     }
 
     /**
-     * Returns a DOMString containing the response string returned by the HTTP server. 
-     * Unlike XMLHttpRequest.status, this includes the entire text of the response message 
+     * Returns a DOMString containing the response string returned by the HTTP server.
+     * Unlike XMLHttpRequest.status, this includes the entire text of the response message
      * ("200 OK", for example).
      */
     get statusText() {
@@ -85,16 +85,16 @@ export default class XMLHttpRequest extends EventTarget {
 
     /**
      * Initializes a request.
-     * @param {*} method 
+     * @param {*} method
      *      The HTTP request method to use, such as "GET", "POST", "PUT", "DELETE", etc. Ignored for non-HTTP(S) URLs.
-     * @param {*} url 
+     * @param {*} url
      *      A DOMString representing the URL to send the request to.
-     * @param {*} async 
-     *      If this value is false, the send() method does not return until the response is received. 
+     * @param {*} async
+     *      If this value is false, the send() method does not return until the response is received.
      *      If true, notification of a completed transaction is provided using event listeners.
-     * @param {*} user 
+     * @param {*} user
      *      The optional user name to use for authentication purposes; by default, this is the null value.
-     * @param {*} password 
+     * @param {*} password
      *      The optional password to use for authentication purposes; by default, this is the null value.
      * @deprecated https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication#access_using_credentials_in_the_url
      */
@@ -117,7 +117,7 @@ export default class XMLHttpRequest extends EventTarget {
 
     /**
      * Sends the request. If the request is asynchronous (which is the default), this method returns as soon as the request is sent.
-     * @param {*} body 
+     * @param {*} body
      */
     send(body) {
         this.#options.extraData = body;
@@ -163,8 +163,8 @@ export default class XMLHttpRequest extends EventTarget {
 
     /**
      * Sets the value of an HTTP request header. You must call setRequestHeader()after open(), but before send().
-     * @param {*} name 
-     * @param {*} value 
+     * @param {*} name
+     * @param {*} value
      */
     setRequestHeader(name, value) {
         name = name.toLowerCase();
@@ -182,9 +182,9 @@ export default class XMLHttpRequest extends EventTarget {
     }
 
     /**
-     * Returns the string containing the text of the specified header, or null if either the response has not yet been 
+     * Returns the string containing the text of the specified header, or null if either the response has not yet been
      * received or the header doesn't exist in the response.
-     * @param {*} name 
+     * @param {*} name
      */
     getResponseHeader(name) {
         name = name.toLowerCase();
@@ -193,7 +193,7 @@ export default class XMLHttpRequest extends EventTarget {
         }
         return this.#responseHeaders[name];
     }
-    
+
     onloadend(e) { }
 }
 

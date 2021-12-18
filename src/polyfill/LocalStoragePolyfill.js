@@ -1,5 +1,6 @@
 import dataStorage from '@ohos.data.storage'
 import featureAbility from '@ohos.ability.featureAbility'
+import {Storage} from '../super-class/Storage'
 
 class LocalStoragePolyfill extends Storage {
 

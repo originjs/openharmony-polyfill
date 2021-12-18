@@ -1,4 +1,4 @@
-class Storage {
+export class Storage {
 
   static key(n){
 
