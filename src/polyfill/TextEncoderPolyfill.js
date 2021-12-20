@@ -1,5 +1,8 @@
 import util from '@ohos.util';
 
-if (util && !globalThis.TextEncoder) {
+/**
+ * since: API 7
+ */
+if (util?.TextEncoder && !globalThis.TextEncoder) {
   globalThis.TextEncoder = util.TextEncoder;
 }

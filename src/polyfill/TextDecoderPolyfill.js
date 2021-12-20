@@ -1,5 +1,8 @@
 import util from '@ohos.util';
 
-if (util && !globalThis.TextDecoder) {
+/**
+ * since: API 7
+ */
+if (util?.TextDecoder && !globalThis.TextDecoder) {
   globalThis.TextDecoder = util.TextDecoder;
 }
