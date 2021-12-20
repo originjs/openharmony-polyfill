@@ -1,4 +1,5 @@
 import './polyfill/LocalStoragePolyfill'
+import './polyfill/URLPloyfill'
 export * from './polyfill/XMLHttpRequestPolyfill'
 export * from './polyfill/TextDecoderPolyfill'
 export * from './polyfill/TextEncoderPolyfill'

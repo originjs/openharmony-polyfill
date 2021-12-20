@@ -8,6 +8,7 @@ struct Index {
   @State response: string = ''
   @State decode: string = '';
   @State encode: string = ''
+  @State urlResult: string= ''
 
   build() {
     Flex({ direction: FlexDirection.Column, alignItems: ItemAlign.Center, justifyContent: FlexAlign.Center }) {
@@ -29,7 +30,7 @@ struct Index {
         console.log('=================')
         console.log(typeof fetch)
         fetch('https://developer.harmonyos.com/cn/develop/')
-          .then(res =>{
+          .then(res => {
             console.log('-----------')
             console.log(res.data)
             this.response = res.statusText;
@@ -74,8 +75,15 @@ struct Index {
         const end = new Date().getTime();
         this.encode = `time:${end - start}ms,result:${JSON.stringify(encoderResult) === JSON.stringify(utilResult) && JSON.stringify(arr1) === JSON.stringify(arr2)}`
       })
-
       Text(this.encode).fontSize(16)
+
+      Button('Use URL').onClick(() => {
+        // @ts-ignore
+        const url = new URL('/abc', 'https://abc.com')
+        this.urlResult = `result:${'abc.com' == url.host && 'https:' === url.protocol && '/abc' === url.pathname}`
+      })
+      Text(this.urlResult).fontSize(16)
+
     }
     .width('100%')
     .height('100%')
