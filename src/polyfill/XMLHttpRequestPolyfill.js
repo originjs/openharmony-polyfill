@@ -122,8 +122,9 @@ class XMLHttpRequest extends EventTarget {
     send(body) {
         this.#options.extraData = body;
         if (this.timeout) {
-            this.#options.readTimeout = this.timeout;
-            this.#options.connectTimeout = this.timeout;
+            const timeout = Number(this.timeout);
+            this.#options.readTimeout = timeout;
+            this.#options.connectTimeout = timeout;
         }
         this.#httpRequest.request(this.#url, this.#options, (err, data) => {
             let loaded = 0;

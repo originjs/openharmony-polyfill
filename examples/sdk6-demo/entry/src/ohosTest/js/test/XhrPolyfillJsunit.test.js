@@ -37,4 +37,4 @@ describe('xhrPolyfillTest', function () {
         xhr.open('GET','https://developer.harmonyos.com/cn/develop/')
         xhr.send()
     })
-}) 
+})
