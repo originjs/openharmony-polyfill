@@ -7,15 +7,14 @@ class LocalStoragePolyfill extends Storage {
   static #storage
   static #initialized = false;
 
-  static init() {
+  static async init() {
     if (!LocalStoragePolyfill.#initialized) {
       const context = featureAbility.getContext();
-      context.getFilesDir().then(path => {
-        if (!LocalStoragePolyfill.#initialized) {
-          LocalStoragePolyfill.#storage = dataStorage.getStorageSync(`${path}/localStorage`)
-          LocalStoragePolyfill.#initialized = true;
-        }
-      })
+      const path = await context.getFilesDir();
+      if (!LocalStoragePolyfill.#initialized) {
+        LocalStoragePolyfill.#storage = dataStorage.getStorageSync(`${path}/localStorage`)
+        LocalStoragePolyfill.#initialized = true;
+      }
     }
   }
 
@@ -25,7 +24,7 @@ class LocalStoragePolyfill extends Storage {
   }
 
   static getItem(key) {
-    return LocalStoragePolyfill.#storage.hasSync(key) ? LocalStoragePolyfill.#storage.getSync(key,'\0') : null;
+    return LocalStoragePolyfill.#storage.hasSync(key) ? LocalStoragePolyfill.#storage.getSync(key, '\0') : null;
   }
 
   static removeItem(key) {

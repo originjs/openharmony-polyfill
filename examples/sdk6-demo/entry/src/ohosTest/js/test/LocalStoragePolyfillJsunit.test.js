@@ -1,13 +1,22 @@
 import 'openharmony-polyfill'
-import {describe, expect, it} from 'deccjsunit/index'
+import {describe, expect, it, beforeAll, beforeEach} from 'deccjsunit/index'
 
-describe('localStoragePolyfillTest', function () {
+
+describe('localStoragePolyfillTest', () => {
+
+  beforeAll(async (done) => {
+    localStorage.init().then(() => {
+      done()
+    })
+  })
+
   it('setItemAndGetItem', 0, () => {
     localStorage.setItem('1', '2');
     localStorage.setItem('1', '3');
     const item = localStorage.getItem('1');
     expect('3').assertEqual(item);
   })
+
 
   it('removeItem', 0, () => {
     localStorage.setItem('2', '2');
@@ -17,8 +26,8 @@ describe('localStoragePolyfillTest', function () {
   })
 
   it('clear', 0, () => {
-    localStorage.setItem('3' , '4');
-    localStorage.setItem('4' , '5');
+    localStorage.setItem('3', '4');
+    localStorage.setItem('4', '5');
     localStorage.clear();
     expect(null).assertEqual(localStorage.getItem('3'))
     expect(null).assertEqual(localStorage.getItem('4'))
