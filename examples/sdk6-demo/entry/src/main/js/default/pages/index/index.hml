@@ -2,6 +2,9 @@
     <text class="title">
         OpenHarmony Polyfill
     </text>
+    <button type="capsule" class="button" onclick="onClickXhr">
+        Use Xhr
+    </button>
     <button type="capsule" class="button" onclick="onClickAxios">
         Use Axios
     </button>

@@ -13,7 +13,7 @@ describe('xhrPolyfillTest', function () {
             console.error('Request failed')
             done()
         }
-        xhr.open('GET','https://developer.harmonyos.com/cn/develop/')
+        xhr.open('GET','https://www.baidu.com/')
         xhr.send()
     })
 
@@ -32,9 +32,10 @@ describe('xhrPolyfillTest', function () {
         xhr.addEventListener('loadend',()=>{
             expect(xhr.status).assertEqual(200)
             expect(xhr.statusText).assertEqual('200')
+            expect(xhr.getResponseHeader('content-type')).assertEqual('text/html');
             done()
         })
-        xhr.open('GET','https://developer.harmonyos.com/cn/develop/')
+        xhr.open('GET','https://www.baidu.com/')
         xhr.send()
     })
 })

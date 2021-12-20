@@ -1,4 +1,5 @@
 import http from '@ohos.net.http';
+import * as JSON5 from 'json5';
 import { EventTarget } from '../super-class/EventTarget';
 
 const StatusCode = {
@@ -108,8 +109,16 @@ class XMLHttpRequest extends EventTarget {
         this.#httpRequest.on('headerReceive', (err, data) => {
             if (!err) {
                 this.#readyState = StatusCode.HEADERS_RECEIVED;
-                //TODO incalid json
-                this.#responseHeaders = JSON.parse(data.header);
+                //TODO: headers has a null key, we can use JSON.parse() if this bug is fixed. 
+                const parsed = JSON5.parse(data.header);
+                this.#responseHeaders = {}
+                Object.getOwnPropertyNames(parsed).forEach(function (name) {
+                    let value = parsed[name]
+                    if (typeof value !== 'string') {
+                        value = String(value)
+                    }
+                    this.#responseHeaders[name.toLowerCase()] = value
+                }, this)
             }
         });
         this.#readyState = StatusCode.OPENED;
@@ -179,7 +188,14 @@ class XMLHttpRequest extends EventTarget {
      * Returns all the response headers, separated by CRLF, as a string, or null if no response has been received.
      */
     getAllResponseHeaders() {
-        return this.#responseHeaders;
+        if (!this.#responseHeaders) {
+            return null;
+        }
+        const array = [];
+        Object.getOwnPropertyNames(this.#responseHeaders).forEach(function (name) {
+            array.push(name + ': ' + this.#responseHeaders[name] + '\r\n');
+        }, this);
+        return array.join('');
     }
 
     /**
@@ -195,6 +211,7 @@ class XMLHttpRequest extends EventTarget {
         return this.#responseHeaders[name];
     }
 
+    // axios will check if onloadend exists, so we define an empty function
     onloadend(e) { }
 }
 

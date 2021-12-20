@@ -7,7 +7,7 @@ const server = 'https://6d61c65ec6d44d6e9a05d4188943a783.apig.cn-north-4.huaweic
 describe('axiosTest', function () {
     it('axios_normal', 0, async function (done) {
         axios.get(server).then(function (res) {
-            expect(res.data).assertEqual('Invalid Request!')
+            expect(res.data).assertEqual('Default Response.')
             done()
         }).catch(function (err) {
             expect.assertFail()

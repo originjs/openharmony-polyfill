@@ -1,4 +1,5 @@
 import http from '@ohos.net.http';
+import * as JSON5 from 'json5';
 
 const DEFAULT_REFERRER_POLICY = 'strict-origin-when-cross-origin';
 function normalizeName(name) {
@@ -52,6 +53,12 @@ export class Headers {
     } else if (Array.isArray(init)) {
       init.forEach((header) => {
         this.append(header[0], header[1])
+      }, this)
+    } else if (typeof init === 'string') {
+      //TODO: headers has a null key, we can use JSON.parse() if this bug is fixed. 
+      const parsed = JSON5.parse(init);
+      Object.getOwnPropertyNames(parsed).forEach(function (name) {
+        this.append(name, parsed[name])
       }, this)
     } else if (init) {
       Object.getOwnPropertyNames(init).forEach(function (name) {
@@ -439,6 +446,13 @@ export class Response extends Body {
   }
 
   /**
+   * Contains the URL of the request.
+   */
+  get url() {
+    return this.#url;
+  }
+
+  /**
    * Creates a clone of a Response object.
    * @returns 
    */
@@ -543,7 +557,7 @@ export function _fetch(input, init) {
         const responseOpttions = {
           url: request.url,
           status: data.responseCode,
-          statusText: ''+ data.responseCode,
+          statusText: '' + data.responseCode,
           headers: data.header,
         }
         resolve(new Response(body, responseOpttions));

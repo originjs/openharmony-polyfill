@@ -46,6 +46,7 @@ var server = http.createServer(function (req, res) {   //create web server
     } else if (req.url.startsWith("/api/buf")) {
         res.end();
     } else {
+        res.setHeader('Content-Type', 'text/plain');
         res.end('Default Response.');
     }
 });
