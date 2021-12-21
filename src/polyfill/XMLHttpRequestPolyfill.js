@@ -8,7 +8,7 @@ const StatusCode = {
     HEADERS_RECEIVED: 2,
     LOADING: 3,
     DONE: 4,
-}
+};
 /**
  * XMLHttpRequest (XHR) objects are used to interact with servers. You can retrieve data from a URL
  * without having to do a full page refresh. This enables a Web page to update just part of a page
@@ -32,7 +32,7 @@ class XMLHttpRequest extends EventTarget {
         super();
         this.#readyState = StatusCode.UNSENT;
         this.#status = StatusCode.UNSENT;
-        this.#options = {}
+        this.#options = {};
     }
 
     /**
@@ -111,14 +111,14 @@ class XMLHttpRequest extends EventTarget {
                 this.#readyState = StatusCode.HEADERS_RECEIVED;
                 //TODO: headers has a null key, we can use JSON.parse() if this bug is fixed. 
                 const parsed = JSON5.parse(data.header);
-                this.#responseHeaders = {}
+                this.#responseHeaders = {};
                 Object.getOwnPropertyNames(parsed).forEach(function (name) {
-                    let value = parsed[name]
+                    let value = parsed[name];
                     if (typeof value !== 'string') {
-                        value = String(value)
+                        value = String(value);
                     }
-                    this.#responseHeaders[name.toLowerCase()] = value
-                }, this)
+                    this.#responseHeaders[name.toLowerCase()] = value;
+                }, this);
             }
         });
         this.#readyState = StatusCode.OPENED;
@@ -219,5 +219,5 @@ if (!globalThis.XMLHttpRequest) {
     globalThis.XMLHttpRequest = XMLHttpRequest;
     globalThis.navigator = {
         product: 'NS'
-    }
+    };
 }

@@ -4,33 +4,33 @@ import * as JSON5 from 'json5';
 const DEFAULT_REFERRER_POLICY = 'strict-origin-when-cross-origin';
 function normalizeName(name) {
   if (typeof name !== 'string') {
-    name = String(name)
+    name = String(name);
   }
   if (/[^a-z0-9\-#$%&'*+.^_`|~!]/i.test(name) || name === '') {
-    throw new TypeError('Invalid character in header field name: "' + name + '"')
+    throw new TypeError('Invalid character in header field name: "' + name + '"');
   }
-  return name.toLowerCase()
+  return name.toLowerCase();
 }
 
 function normalizeValue(value) {
   if (typeof value !== 'string') {
-    value = String(value)
+    value = String(value);
   }
-  return value
+  return value;
 }
 
 // Build a destructive iterator for the value list
 function iteratorFor(items) {
   var iterator = {
     next: function () {
-      var value = items.shift()
-      return { done: value === undefined, value: value }
+      var value = items.shift();
+      return { done: value === undefined, value: value };
     }
-  }
+  };
   iterator[Symbol.iterator] = function () {
-    return iterator
-  }
-  return iterator
+    return iterator;
+  };
+  return iterator;
 }
 
 /**
@@ -48,22 +48,22 @@ export class Headers {
   constructor(init) {
     if (init instanceof Headers) {
       init.forEach((value, name) => {
-        this.append(name, value)
-      }, this)
+        this.append(name, value);
+      }, this);
     } else if (Array.isArray(init)) {
       init.forEach((header) => {
-        this.append(header[0], header[1])
-      }, this)
+        this.append(header[0], header[1]);
+      }, this);
     } else if (typeof init === 'string') {
       //TODO: headers has a null key, we can use JSON.parse() if this bug is fixed. 
       const parsed = JSON5.parse(init);
       Object.getOwnPropertyNames(parsed).forEach(function (name) {
-        this.append(name, parsed[name])
-      }, this)
+        this.append(name, parsed[name]);
+      }, this);
     } else if (init) {
       Object.getOwnPropertyNames(init).forEach(function (name) {
-        this.append(name, init[name])
-      }, this)
+        this.append(name, init[name]);
+      }, this);
     }
   }
 
@@ -76,10 +76,10 @@ export class Headers {
    *    The value of the HTTP header you want to add.
    */
   append(name, value) {
-    name = normalizeName(name)
-    value = normalizeValue(value)
-    const oldValue = this.#map[name]
-    this.#map[name] = oldValue ? oldValue + ', ' + value : value
+    name = normalizeName(name);
+    value = normalizeValue(value);
+    const oldValue = this.#map[name];
+    this.#map[name] = oldValue ? oldValue + ', ' + value : value;
   }
 
   /**
@@ -87,7 +87,7 @@ export class Headers {
    * @param {*} name 
    */
   delete(name) {
-    delete this.#map[normalizeName(name)]
+    delete this.#map[normalizeName(name)];
   }
 
   /**
@@ -96,8 +96,8 @@ export class Headers {
    * @returns 
    */
   get(name) {
-    name = normalizeName(name)
-    return this.has(name) ? this.#map[name] : null
+    name = normalizeName(name);
+    return this.has(name) ? this.#map[name] : null;
   }
 
   /**
@@ -106,7 +106,7 @@ export class Headers {
    * @returns 
    */
   has(name) {
-    return Object.prototype.hasOwnProperty.call(this.#map, normalizeName(name))
+    return Object.prototype.hasOwnProperty.call(this.#map, normalizeName(name));
   }
 
   /**
@@ -115,7 +115,7 @@ export class Headers {
    * @param {*} value 
    */
   set(name, value) {
-    this.#map[normalizeName(name)] = normalizeValue(value)
+    this.#map[normalizeName(name)] = normalizeValue(value);
   }
 
   /**
@@ -126,7 +126,7 @@ export class Headers {
   forEach(callback, thisArg) {
     for (let name in this.#map) {
       if (Object.prototype.hasOwnProperty.call(this.#map, name)) {
-        callback.call(thisArg, this.#map[name], name, this)
+        callback.call(thisArg, this.#map[name], name, this);
       }
     }
   }
@@ -136,11 +136,11 @@ export class Headers {
    * @returns 
    */
   keys() {
-    const items = []
+    const items = [];
     this.forEach(function (value, name) {
-      items.push(name)
-    })
-    return iteratorFor(items)
+      items.push(name);
+    });
+    return iteratorFor(items);
   }
 
   /**
@@ -148,11 +148,11 @@ export class Headers {
    * @returns 
    */
   values() {
-    const items = []
+    const items = [];
     this.forEach(function (value) {
-      items.push(value)
-    })
-    return iteratorFor(items)
+      items.push(value);
+    });
+    return iteratorFor(items);
   }
 
   /**
@@ -160,11 +160,11 @@ export class Headers {
    * @returns 
    */
   entries() {
-    const items = []
+    const items = [];
     this.forEach(function (value, name) {
-      items.push([name, value])
-    })
-    return iteratorFor(items)
+      items.push([name, value]);
+    });
+    return iteratorFor(items);
   }
 
 }
@@ -187,7 +187,7 @@ export class Body {
     } else if (Object.prototype.isPrototypeOf.call(ArrayBuffer, body) || ArrayBuffer.isView(body)) {
       this.#bodyBuffer = this._bufferClone(body);
     } else {
-      this._bodyText = Object.prototype.toString.call(body)
+      this._bodyText = Object.prototype.toString.call(body);
     }
   }
 
@@ -210,14 +210,14 @@ export class Body {
    * @returns Promise
    */
   async text() {
-    this._consumeBody()
+    this._consumeBody();
     if (this._bodyArrayBuffer) {
-      const view = new Uint8Array(this._bodyArrayBuffer)
-      let chars = new Array(view.length)
+      const view = new Uint8Array(this._bodyArrayBuffer);
+      let chars = new Array(view.length);
       for (var i = 0; i < view.length; i++) {
-        chars[i] = String.fromCharCode(view[i])
+        chars[i] = String.fromCharCode(view[i]);
       }
-      return chars.join('')
+      return chars.join('');
     } {
       return this.#bodyText;
     }
@@ -249,18 +249,18 @@ export class Body {
 
   _consumeBody() {
     if (this.#bodyUsed) {
-      throw new TypeError('Body already used!')
+      throw new TypeError('Body already used!');
     }
-    this.#bodyUsed = true
+    this.#bodyUsed = true;
   }
 
   _bufferClone(buf) {
     if (buf.slice) {
-      return buf.slice(0)
+      return buf.slice(0);
     } else {
-      var view = new Uint8Array(buf.byteLength)
-      view.set(new Uint8Array(buf))
-      return view.buffer
+      var view = new Uint8Array(buf.byteLength);
+      view.set(new Uint8Array(buf));
+      return view.buffer;
     }
   }
 
@@ -279,7 +279,7 @@ export class Request extends Body {
   #method;
   #mode;
   #signal;
-  #referrer
+  #referrer;
 
   /**
    * Creates a new Request object.
@@ -296,20 +296,20 @@ export class Request extends Body {
       init.body :
       (input instanceof Request ? input : null);
     if ((method === 'GET' || method === 'HEAD') && inputBody) {
-      throw new TypeError('Body not allowed for GET or HEAD requests')
+      throw new TypeError('Body not allowed for GET or HEAD requests');
     }
     super(inputBody);
 
     if (input instanceof Request) {
       if (input.bodyUsed) {
-        throw new TypeError('Already read')
+        throw new TypeError('Already read');
       }
-      this.#url = input.url
+      this.#url = input.url;
     } else {
-      this.#url = String(input)
+      this.#url = String(input);
     }
 
-    this.#credentials = init.credentials || input.credentials || 'same-origin'
+    this.#credentials = init.credentials || input.credentials || 'same-origin';
     this.#headers = new Headers(init.headers || input.headers || {});
     this.#method = method;
     this.#mode = init.mode || input.mode;
@@ -318,14 +318,14 @@ export class Request extends Body {
     if (this.#method === 'GET' || this.#method === 'HEAD') {
       if (init.cache === 'no-store' || init.cache === 'no-cache') {
         // Search for a '_' parameter in the query string
-        const reParamSearch = /([?&])_=[^&]*/
+        const reParamSearch = /([?&])_=[^&]*/;
         if (reParamSearch.test(this.url)) {
           // If it already exists then set the value with the current time
-          this.#url = this.#url.replace(reParamSearch, '$1_=' + new Date().getTime())
+          this.#url = this.#url.replace(reParamSearch, '$1_=' + new Date().getTime());
         } else {
           // Otherwise add a new '_' parameter to the end with the current time
-          const reQueryString = /\?/
-          this.#url += (reQueryString.test(this.#url) ? '&' : '?') + '_=' + new Date().getTime()
+          const reQueryString = /\?/;
+          this.#url += (reQueryString.test(this.#url) ? '&' : '?') + '_=' + new Date().getTime();
         }
       }
     }
@@ -382,7 +382,7 @@ export class Request extends Body {
    * @returns 
    */
   clone() {
-    return new Request(this, { body: this._bodyInit })
+    return new Request(this, { body: this._bodyInit });
   }
 }
 
@@ -400,13 +400,13 @@ export class Response extends Body {
   constructor(body, init) {
     super(body);
     if (!init) {
-      init = {}
+      init = {};
     }
 
-    this.#type = 'default'
-    this.#status = init.status === undefined ? 200 : init.status
+    this.#type = 'default';
+    this.#status = init.status === undefined ? 200 : init.status;
     this.#ok = (this.#status >= 200 && this.#status < 300);
-    this.#statusText = init.statusText === undefined ? '' : '' + init.statusText
+    this.#statusText = init.statusText === undefined ? '' : '' + init.statusText;
     this.#headers = new Headers(init.headers);
     this.#url = init.url || '';
   }
@@ -462,7 +462,7 @@ export class Response extends Body {
       statusText: this.statusText,
       headers: new Headers(this.headers),
       url: this.url
-    })
+    });
   }
 
   /**
@@ -493,10 +493,10 @@ export class Response extends Body {
 
 class FetchError extends Error {
   constructor(message, name) {
-    super(message)
-    this.name = name
-    var error = Error(message)
-    this.stack = error.stack
+    super(message);
+    this.name = name;
+    var error = Error(message);
+    this.stack = error.stack;
   }
 }
 
@@ -543,7 +543,7 @@ export function _fetch(input, init) {
   return new Promise(function (resolve, reject) {
     const request = new Request(input, init);
     if (request.signal && request.signal.aborted) {
-      return reject(new FetchError('Aborted', 'AbortError'))
+      return reject(new FetchError('Aborted', 'AbortError'));
     }
 
     const httpRequest = http.createHttp();
@@ -559,11 +559,11 @@ export function _fetch(input, init) {
           status: data.responseCode,
           statusText: '' + data.responseCode,
           headers: data.header,
-        }
+        };
         resolve(new Response(body, responseOpttions));
       }
-    })
-  })
+    });
+  });
 }
 
 _fetch.polyfill = true;
@@ -575,7 +575,7 @@ if (!globalThis.fetch) {
   globalThis.Response = Response;
   // We have a `fetch` object in `script` scope, replace it
   if (!globalThis.original) {
-    globalThis.original = {}
+    globalThis.original = {};
   }
   globalThis.original.fetch = fetch;
   fetch = _fetch;

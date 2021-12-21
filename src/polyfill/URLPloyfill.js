@@ -1,4 +1,4 @@
-import url from '@ohos.url'
+import url from '@ohos.url';
 
 /**
  * since: API 7

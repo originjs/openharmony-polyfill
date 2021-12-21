@@ -1,13 +1,13 @@
-import dataStorage from '@ohos.data.storage'
-import featureAbility from '@ohos.ability.featureAbility'
-import {Storage} from '../super-class/Storage'
+import dataStorage from '@ohos.data.storage';
+import featureAbility from '@ohos.ability.featureAbility';
+import {Storage} from '../super-class/Storage';
 
 /**
  * since: API 6
  */
 class LocalStoragePolyfill extends Storage {
 
-  static #storage
+  static #storage;
   static #initialized = false;
 
   static async init() {
@@ -15,7 +15,7 @@ class LocalStoragePolyfill extends Storage {
       const context = featureAbility.getContext();
       const path = await context.getFilesDir();
       if (!LocalStoragePolyfill.#initialized) {
-        LocalStoragePolyfill.#storage = dataStorage.getStorageSync(`${path}/localStorage`)
+        LocalStoragePolyfill.#storage = dataStorage.getStorageSync(`${path}/localStorage`);
         LocalStoragePolyfill.#initialized = true;
       }
     }

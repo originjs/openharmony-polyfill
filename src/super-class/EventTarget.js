@@ -15,7 +15,7 @@ export class EventTarget {
      */
     addEventListener(type, listener) {
         if (this._listeners === undefined) {
-            this._listeners = {}
+            this._listeners = {};
         }
         let listeners = this._listeners;
         if (listeners[type] === undefined) {
