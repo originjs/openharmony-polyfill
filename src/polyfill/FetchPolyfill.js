@@ -7,7 +7,9 @@ function normalizeName(name) {
     name = String(name);
   }
   if (/[^a-z0-9\-#$%&'*+.^_`|~!]/i.test(name) || name === '') {
-    throw new TypeError('Invalid character in header field name: "' + name + '"');
+    throw new TypeError(
+      'Invalid character in header field name: "' + name + '"'
+    );
   }
   return name.toLowerCase();
 }
@@ -38,12 +40,11 @@ function iteratorFor(items) {
  * These actions include retrieving, setting, adding to, and removing headers from the list of the request's headers.
  */
 export class Headers {
-
   #map = {};
 
   /**
    * The Headers() constructor creates a new Headers object.
-   * @param {*} init 
+   * @param {*} init
    */
   constructor(init) {
     if (init instanceof Headers) {
@@ -55,7 +56,7 @@ export class Headers {
         this.append(header[0], header[1]);
       }, this);
     } else if (typeof init === 'string') {
-      //TODO: headers has a null key, we can use JSON.parse() if this bug is fixed. 
+      //TODO: the headers returned by OpenHarmony has a null key, we can use JSON.parse() if this bug is fixed.
       const parsed = JSON5.parse(init);
       Object.getOwnPropertyNames(parsed).forEach(function (name) {
         this.append(name, parsed[name]);
@@ -68,11 +69,11 @@ export class Headers {
   }
 
   /**
-   * Appends a new value onto an existing header inside a Headers object, or adds the header if it does not 
+   * Appends a new value onto an existing header inside a Headers object, or adds the header if it does not
    * already exist.
-   * @param {*} name 
+   * @param {*} name
    *    The name of the HTTP header you want to add to the Headers object.
-   * @param {*} value 
+   * @param {*} value
    *    The value of the HTTP header you want to add.
    */
   append(name, value) {
@@ -84,7 +85,7 @@ export class Headers {
 
   /**
    * Deletes a header from a Headers object.
-   * @param {*} name 
+   * @param {*} name
    */
   delete(name) {
     delete this.#map[normalizeName(name)];
@@ -92,8 +93,8 @@ export class Headers {
 
   /**
    * Returns a String sequence of all the values of a header within a Headers object with a given name
-   * @param {*} name 
-   * @returns 
+   * @param {*} name
+   * @returns
    */
   get(name) {
     name = normalizeName(name);
@@ -102,8 +103,8 @@ export class Headers {
 
   /**
    * Returns a boolean stating whether a Headers object contains a certain header.
-   * @param {*} name 
-   * @returns 
+   * @param {*} name
+   * @returns
    */
   has(name) {
     return Object.prototype.hasOwnProperty.call(this.#map, normalizeName(name));
@@ -111,8 +112,8 @@ export class Headers {
 
   /**
    * Sets a new value for an existing header inside a Headers object, or adds the header if it does not already exist.
-   * @param {*} name 
-   * @param {*} value 
+   * @param {*} name
+   * @param {*} value
    */
   set(name, value) {
     this.#map[normalizeName(name)] = normalizeValue(value);
@@ -120,8 +121,8 @@ export class Headers {
 
   /**
    * Executes a provided function once for each array element.
-   * @param {*} callback 
-   * @param {*} thisArg 
+   * @param {*} callback
+   * @param {*} thisArg
    */
   forEach(callback, thisArg) {
     for (let name in this.#map) {
@@ -133,7 +134,7 @@ export class Headers {
 
   /**
    * Returns an iterator allowing you to go through all keys of the key/value pairs contained in this object.
-   * @returns 
+   * @returns
    */
   keys() {
     const items = [];
@@ -145,7 +146,7 @@ export class Headers {
 
   /**
    * Returns an iterator allowing you to go through all values of the key/value pairs contained in this object.
-   * @returns 
+   * @returns
    */
   values() {
     const items = [];
@@ -157,7 +158,7 @@ export class Headers {
 
   /**
    * Returns an iterator allowing to go through all key/value pairs contained in this object.
-   * @returns 
+   * @returns
    */
   entries() {
     const items = [];
@@ -166,7 +167,6 @@ export class Headers {
     });
     return iteratorFor(items);
   }
-
 }
 
 /**
@@ -174,7 +174,6 @@ export class Headers {
  * @see https://fetch.spec.whatwg.org/#body
  */
 export class Body {
-
   #bodyText;
   #bodyBuffer;
   #bodyUsed = false;
@@ -184,7 +183,10 @@ export class Body {
       this.#bodyText = '';
     } else if (typeof body === 'string') {
       this.#bodyText = body;
-    } else if (Object.prototype.isPrototypeOf.call(ArrayBuffer, body) || ArrayBuffer.isView(body)) {
+    } else if (
+      Object.prototype.isPrototypeOf.call(ArrayBuffer, body) ||
+      ArrayBuffer.isView(body)
+    ) {
       this.#bodyBuffer = this._bufferClone(body);
     } else {
       this._bodyText = Object.prototype.toString.call(body);
@@ -218,7 +220,8 @@ export class Body {
         chars[i] = String.fromCharCode(view[i]);
       }
       return chars.join('');
-    } {
+    }
+    {
       return this.#bodyText;
     }
   }
@@ -263,15 +266,13 @@ export class Body {
       return view.buffer;
     }
   }
-
 }
 
 /**
  * The Request interface of the Fetch API represents a resource request.
  */
 export class Request extends Body {
-
-  cache;
+  cache = 'default';
 
   #url;
   #credentials;
@@ -283,18 +284,19 @@ export class Request extends Body {
 
   /**
    * Creates a new Request object.
-   * @param {*} input 
+   * @param {*} input
    *    Defines the resource that you wish to fetch.
-   * @param {*} init 
-   *    An options object containing any custom settings that you want to apply to the request. 
+   * @param {*} init
+   *    An options object containing any custom settings that you want to apply to the request.
    */
   constructor(input, init = {}) {
-
     let method = init.method || input.method || 'GET';
     method = method.toUpperCase();
-    const inputBody = init.body ?
-      init.body :
-      (input instanceof Request ? input : null);
+    const inputBody = init.body
+      ? init.body
+      : input instanceof Request
+      ? input
+      : null;
     if ((method === 'GET' || method === 'HEAD') && inputBody) {
       throw new TypeError('Body not allowed for GET or HEAD requests');
     }
@@ -321,11 +323,17 @@ export class Request extends Body {
         const reParamSearch = /([?&])_=[^&]*/;
         if (reParamSearch.test(this.url)) {
           // If it already exists then set the value with the current time
-          this.#url = this.#url.replace(reParamSearch, '$1_=' + new Date().getTime());
+          this.#url = this.#url.replace(
+            reParamSearch,
+            '$1_=' + new Date().getTime()
+          );
         } else {
           // Otherwise add a new '_' parameter to the end with the current time
           const reQueryString = /\?/;
-          this.#url += (reQueryString.test(this.#url) ? '&' : '?') + '_=' + new Date().getTime();
+          this.#url +=
+            (reQueryString.test(this.#url) ? '&' : '?') +
+            '_=' +
+            new Date().getTime();
         }
       }
     }
@@ -379,7 +387,7 @@ export class Request extends Body {
 
   /**
    * Creates a copy of the current Request object.
-   * @returns 
+   * @returns
    */
   clone() {
     return new Request(this, { body: this._bodyInit });
@@ -405,8 +413,9 @@ export class Response extends Body {
 
     this.#type = 'default';
     this.#status = init.status === undefined ? 200 : init.status;
-    this.#ok = (this.#status >= 200 && this.#status < 300);
-    this.#statusText = init.statusText === undefined ? '' : '' + init.statusText;
+    this.#ok = this.#status >= 200 && this.#status < 300;
+    this.#statusText =
+      init.statusText === undefined ? '' : '' + init.statusText;
     this.#headers = new Headers(init.headers);
     this.#url = init.url || '';
   }
@@ -425,15 +434,15 @@ export class Response extends Body {
     return this.#ok;
   }
   /**
-     * The status code of the response. (This will be 200 for a success).
-     */
+   * The status code of the response. (This will be 200 for a success).
+   */
   get status() {
     return this.#status;
   }
 
   /**
-     * The status message corresponding to the status code. (e.g., OK for 200).
-     */
+   * The status message corresponding to the status code. (e.g., OK for 200).
+   */
   get statusText() {
     return this.#statusText;
   }
@@ -454,7 +463,7 @@ export class Response extends Body {
 
   /**
    * Creates a clone of a Response object.
-   * @returns 
+   * @returns
    */
   clone() {
     return new Response(this._bodyInit, {
@@ -467,7 +476,7 @@ export class Response extends Body {
 
   /**
    * Returns a new Response object associated with a network error.
-   * @returns 
+   * @returns
    */
   error() {
     const response = new Response(null, { status: 0, statusText: '' });
@@ -477,9 +486,9 @@ export class Response extends Body {
 
   /**
    * Creates a new response with a different URL.
-   * @param {*} url 
-   * @param {*} status 
-   * @returns 
+   * @param {*} url
+   * @param {*} status
+   * @returns
    */
   redirect(url, status) {
     const redirectStatuses = [301, 302, 303, 307, 308];
@@ -539,9 +548,18 @@ function getHarmonyRequestOptions(request) {
   };
 }
 
-export function _fetch(input, init) {
+/**
+ * The global fetch() method starts the process of fetching a resource from the network, returning a promise which is
+ * fulfilled once the response is available.
+ * @param {*} resource
+ *    This defines the resource that you wish to fetch. This can either be a string or a Request object.
+ * @param {*} init
+ *    An object containing any custom settings that you want to apply to the request.
+ * @returns
+ */
+export function _fetch(resource, init) {
   return new Promise(function (resolve, reject) {
-    const request = new Request(input, init);
+    const request = new Request(resource, init);
     if (request.signal && request.signal.aborted) {
       return reject(new FetchError('Aborted', 'AbortError'));
     }
@@ -558,7 +576,7 @@ export function _fetch(input, init) {
           url: request.url,
           status: data.responseCode,
           statusText: '' + data.responseCode,
-          headers: data.header,
+          headers: data.header
         };
         resolve(new Response(body, responseOpttions));
       }
@@ -579,5 +597,4 @@ if (!globalThis.fetch) {
   }
   globalThis.original.fetch = fetch;
   fetch = _fetch;
-
 }
