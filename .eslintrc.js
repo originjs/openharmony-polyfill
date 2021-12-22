@@ -1,4 +1,3 @@
-
 module.exports = {
   extends: [
     'eslint:recommended',
@@ -17,7 +16,7 @@ module.exports = {
     'node/no-unsupported-features/es-syntax': 'off',
     '@typescript-eslint/no-var-requires': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
-    "@typescript-eslint/no-empty-function": 'off',
+    '@typescript-eslint/no-empty-function': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-this-alias': 'off',
     'no-unused-vars': [
@@ -26,10 +25,11 @@ module.exports = {
       // catches unused variables but not args.
       { varsIgnorePattern: '.*', args: 'none' }
     ],
-    'semi': ['warn', 'always']
+    semi: ['warn', 'always']
   },
-  "globals": {
-    "WebSocket": true,
-    "fetch": true
+  globals: {
+    WebSocket: true,
+    fetch: true,
+    XMLHttpRequest: true
   }
-}
+};

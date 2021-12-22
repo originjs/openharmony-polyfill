@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "",
   "main": "src/index.js",
-  "types": "src/index.d.ts",
+  "types": "index.d.ts",
   "files": [
     "src"
   ],

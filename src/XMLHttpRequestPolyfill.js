@@ -1,12 +1,13 @@
 import http from '@ohos.net.http';
 import * as JSON5 from 'json5';
-import { EventTarget } from '../super-class/EventTarget';
+import { EventTarget } from './lib/EventTarget';
+import { StatusMap } from './lib/statuscodes';
 
 /**
  * The ProgressEvent interface represents events measuring progress of an underlying process, like an HTTP request
  * (for an XMLHttpRequest, or the loading of the underlying resource of an <img>, <audio>, <video>, <style> or <link>).
  */
-export class ProgressEvent {
+class ProgressEvent {
   #type;
   #lengthComputable;
   #loaded;
@@ -153,7 +154,7 @@ class XMLHttpRequest extends EventTarget {
    * ("200 OK", for example).
    */
   get statusText() {
-    return '' + this.#status;
+    return StatusMap[this.#status];
   }
 
   /**
