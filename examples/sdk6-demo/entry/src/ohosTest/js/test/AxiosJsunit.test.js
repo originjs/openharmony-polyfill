@@ -1,6 +1,6 @@
 import 'openharmony-polyfill';
 import axios from 'axios';
-import { describe, beforeAll, beforeEach, afterEach, afterAll, it, expect } from 'deccjsunit/index';
+import {describe, beforeAll, beforeEach, afterEach, afterAll, it, expect} from 'deccjsunit/index';
 
 const server = 'https://6d61c65ec6d44d6e9a05d4188943a783.apig.cn-north-4.huaweicloudapis.com/api';
 
@@ -94,7 +94,8 @@ describe('axiosTest', function () {
     });
 
     it('axios_binary', 0, async function (done) {
-        axios.get(server + '/binary', { responseType: 'arraybuffer' })
+        axios.get('https://developer.mozilla.org/favicon-48x48.97046865.png',
+            { responseType: 'arraybuffer' })
             .then(function (res) {
                 let data = res.data;
                 expect(data.length).assertEqual(2);
@@ -102,8 +103,8 @@ describe('axiosTest', function () {
                 expect(data[1]).assertEqual(2);
                 done();
             }).catch(function (err) {
-                expect.assertFail();
-                done();
-            });
+            expect.assertFail();
+            done();
+        });
     });
 });

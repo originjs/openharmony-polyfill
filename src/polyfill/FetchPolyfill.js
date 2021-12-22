@@ -39,7 +39,7 @@ function iteratorFor(items) {
  * The Headers interface of the Fetch API allows you to perform various actions on HTTP request and response headers.
  * These actions include retrieving, setting, adding to, and removing headers from the list of the request's headers.
  */
-export class Headers {
+class Headers {
   #map = {};
 
   /**
@@ -173,7 +173,7 @@ export class Headers {
  * Body class provides common methods for Request and Response
  * @see https://fetch.spec.whatwg.org/#body
  */
-export class Body {
+class Body {
   #bodyText;
   #bodyBuffer;
   #bodyUsed = false;
@@ -271,7 +271,7 @@ export class Body {
 /**
  * The Request interface of the Fetch API represents a resource request.
  */
-export class Request extends Body {
+class Request extends Body {
   cache = 'default';
 
   #url;
@@ -397,7 +397,7 @@ export class Request extends Body {
 /**
  * The Response interface of the Fetch API represents the response to a request.
  */
-export class Response extends Body {
+class Response extends Body {
   #type;
   #status;
   #statusText;
@@ -557,7 +557,7 @@ function getHarmonyRequestOptions(request) {
  *    An object containing any custom settings that you want to apply to the request.
  * @returns
  */
-export function _fetch(resource, init) {
+function _fetch(resource, init) {
   return new Promise(function (resolve, reject) {
     const request = new Request(resource, init);
     if (request.signal && request.signal.aborted) {

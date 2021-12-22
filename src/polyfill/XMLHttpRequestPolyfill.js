@@ -2,19 +2,11 @@ import http from '@ohos.net.http';
 import * as JSON5 from 'json5';
 import { EventTarget } from '../super-class/EventTarget';
 
-const StatusCode = {
-  UNSENT: 0,
-  OPENED: 1,
-  HEADERS_RECEIVED: 2,
-  LOADING: 3,
-  DONE: 4
-};
-
 /**
  * The ProgressEvent interface represents events measuring progress of an underlying process, like an HTTP request
  * (for an XMLHttpRequest, or the loading of the underlying resource of an <img>, <audio>, <video>, <style> or <link>).
  */
-class ProgressEvent {
+export class ProgressEvent {
   #type;
   #lengthComputable;
   #loaded;
@@ -71,9 +63,26 @@ class ProgressEvent {
  * @see https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest
  */
 class XMLHttpRequest extends EventTarget {
+  static get UNSENT() {
+    return 0;
+  }
+  static get OPENED() {
+    return 1;
+  }
+  static get HEADERS_RECEIVED() {
+    return 2;
+  }
+  static get LOADING() {
+    return 3;
+  }
+  static get DONE() {
+    return 4;
+  }
+
   #httpRequest;
   #url;
   #options;
+  #overrideMimeType;
   #responseHeaders;
   #readyState;
   #response;
@@ -85,8 +94,8 @@ class XMLHttpRequest extends EventTarget {
    */
   constructor() {
     super();
-    this.#readyState = StatusCode.UNSENT;
-    this.#status = StatusCode.UNSENT;
+    this.#readyState = XMLHttpRequest.UNSENT;
+    this.#status = XMLHttpRequest.UNSENT;
     this.#options = {};
   }
 
@@ -102,7 +111,20 @@ class XMLHttpRequest extends EventTarget {
    * value of XMLHttpRequest.responseType, that contains the response entity body.
    */
   get response() {
-    return this.#response;
+    if (this.responseType === 'arraybuffer') {
+      if (typeof this.#response === 'function') {
+        return this.#response;
+      }
+      const array = [];
+      const length = this.#responseText.length;
+      for (let i = 0; i < length; i++) {
+        array.push(this.#responseText.charCodeAt(i));
+      }
+      return new Uint8Array(array).buffer;
+    } else if (this.responseType === 'json') {
+      return JSON.parse(this.#responseText);
+    }
+    return this.#responseText;
   }
 
   /**
@@ -163,7 +185,7 @@ class XMLHttpRequest extends EventTarget {
     this.#httpRequest = http.createHttp();
     this.#httpRequest.on('headerReceive', (err, data) => {
       if (!err) {
-        this.#readyState = StatusCode.HEADERS_RECEIVED;
+        this._changeReadyState(XMLHttpRequest.HEADERS_RECEIVED);
         //TODO: the headers returned by OpenHarmony has a null key, we can use JSON.parse() if this bug is fixed.
         const parsed = JSON5.parse(data.header);
         this.#responseHeaders = {};
@@ -174,9 +196,23 @@ class XMLHttpRequest extends EventTarget {
           }
           this.#responseHeaders[name.toLowerCase()] = value;
         }, this);
+        // overrides the MIME type returned by the server.
+        if (this.#overrideMimeType) {
+          this.#responseHeaders['content-type'] = this.#overrideMimeType;
+        }
       }
     });
-    this.#readyState = StatusCode.OPENED;
+
+    this._changeReadyState(XMLHttpRequest.OPENED);
+  }
+
+  /**
+   * Overrides the MIME type returned by the server.
+   * @param {*} mimeType
+   *    A DOMString specifying the MIME type to use instead of the one specified by the server.
+   */
+  overrideMimeType(mimeType) {
+    this.#overrideMimeType = mimeType;
   }
 
   /**
@@ -194,8 +230,13 @@ class XMLHttpRequest extends EventTarget {
       let loaded = 0;
       if (!err) {
         this.#status = data.responseCode;
-        this.#response = data.result;
-        this.#responseText = data.result;
+        // openharmony now only returns string, arraybuffer will be supported later.
+        if (typeof data.result === 'string') {
+          this.#responseText = data.result;
+        } else {
+          this.#response = data.result;
+        }
+
         this.dispatchEvent({ type: 'load' });
         // https://xhr.spec.whatwg.org/#progressevent
         if (this.onload) {
@@ -209,7 +250,7 @@ class XMLHttpRequest extends EventTarget {
         }
       }
 
-      this.#readyState = StatusCode.DONE;
+      this._changeReadyState(XMLHttpRequest.DONE);
       this.dispatchEvent({ type: 'loadend' });
       this.onloadend(new ProgressEvent('loadend', false, loaded));
     });
@@ -222,8 +263,8 @@ class XMLHttpRequest extends EventTarget {
     if (this.#httpRequest) {
       this.#httpRequest.destroy();
     }
-    this.#readyState = StatusCode.UNSENT;
-    this.#status = StatusCode.UNSENT;
+    this._changeReadyState(XMLHttpRequest.UNSENT);
+    this.#status = XMLHttpRequest.UNSENT;
   }
 
   /**
@@ -268,6 +309,13 @@ class XMLHttpRequest extends EventTarget {
 
   // axios will check if onloadend exists, so we define an empty function
   onloadend(e) {}
+
+  _changeReadyState(state) {
+    this.#readyState = state;
+    if (this.onreadystatechange) {
+      this.onreadystatechange();
+    }
+  }
 }
 
 if (!globalThis.XMLHttpRequest) {

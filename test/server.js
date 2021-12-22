@@ -45,10 +45,8 @@ var server = http.createServer(function (req, res) {
     res.setHeader('Content-Type', 'text/html; charset=UTF-8');
     res.end(str);
   } else if (req.url.startsWith('/api/binary')) {
-    const input = new Int8Array(2);
-    input[0] = 1;
-    input[1] = 2;
-    res.end();
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.end(Buffer.from([1, 2]));
   } else {
     res.setHeader('Content-Type', 'text/plain');
     res.end('Default Response.');
