@@ -32,8 +32,6 @@ jobs:
           body: |
             Please refer to [CHANGELOG.md](https://github.com/originjs/vite-plugin-federation/blob/main/packages/lib/CHANGELOG.md) for details.
       - name: Publish to npm registry
-        run: |
-          cd packages/lib
-          npm publish --access public
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
