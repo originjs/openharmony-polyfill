@@ -47,6 +47,8 @@ var server = http.createServer(function (req, res) {
   } else if (req.url.startsWith('/api/binary')) {
     res.setHeader('Content-Type', 'application/octet-stream');
     res.end(Buffer.from([1, 2]));
+  } else if (req.url.startsWith('/api/post')) {
+    req.pipe(res);
   } else {
     res.setHeader('Content-Type', 'text/plain');
     res.end('Default Response.');

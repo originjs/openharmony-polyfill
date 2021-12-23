@@ -93,6 +93,19 @@ describe('axiosTest', function () {
         });
     });
 
+    it('axios_post', 0, async function (done) {
+        axios.post(server + '/post',
+            { foo: 'bar' })
+            .then(function (res) {
+                expect(res.status).assertEqual(200);
+                expect(res.data.foo).assertEqual('bar');
+                done();
+            }).catch(function (err) {
+            expect.assertFail();
+            done();
+        });
+    });
+
     it('axios_binary', 0, async function (done) {
         axios.get('https://developer.mozilla.org/favicon-48x48.97046865.png',
             { responseType: 'arraybuffer' })

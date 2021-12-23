@@ -116,12 +116,13 @@ class XMLHttpRequest extends EventTarget {
       if (typeof this.#response === 'function') {
         return this.#response;
       }
-      const array = [];
+
       const length = this.#responseText.length;
+      const array = new Int8Array(length);
       for (let i = 0; i < length; i++) {
-        array.push(this.#responseText.charCodeAt(i));
+        array[i] = this.#responseText.charCodeAt(i);
       }
-      return new Uint8Array(array).buffer;
+      return array.buffer;
     } else if (this.responseType === 'json') {
       return JSON.parse(this.#responseText);
     }
