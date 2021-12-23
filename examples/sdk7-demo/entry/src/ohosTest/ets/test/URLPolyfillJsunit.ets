@@ -6,7 +6,6 @@ export default function URLPolyfillJsunit() {
 
   describe('URLPolyfillJsunit', function () {
 
-    // @ts-ignore
     const url = new URL('/abc?x=1#1', 'https://abc.com:1234')
     it('hash', 0, () => {
       expect(url.hash).assertEqual('#1')
@@ -21,7 +20,7 @@ export default function URLPolyfillJsunit() {
     })
 
     it('href', 0, () => {
-      expect(url.href).assertEqual('https://abc.com:1234/abc#1')
+      expect(url.href).assertEqual('https://abc.com:1234/abc?x=1#1')
     })
 
     it('origin', 0, () => {

@@ -16,7 +16,8 @@ export default function TextDecoderPolyfillJsunit() {
       const u8Result = decoder.decode(u8arr);
       const i8Result = decoder.decode(i8arr);
       const u16Result = utilDecoder.decode(u16arr);
-      expect(u8Result).assertEqual(i8Result).assertEqual(u16Result);
+      expect(u8Result).assertEqual(i8Result)
+      expect(u8Result).assertEqual(u16Result);
     })
 
     it('default-config', 0, () => {
@@ -26,8 +27,12 @@ export default function TextDecoderPolyfillJsunit() {
     })
 
     it('custom-config', 0, () => {
-      const customDecoder = new TextDecoder('windows-1251',{fatal:true,ignore});
+      const customDecoder = new TextDecoder('windows-1251', {
+        fatal: true, ignoreBOM: true
+      });
       expect(customDecoder.encoding).assertEqual('windows-1251')
+      expect(customDecoder.fatal).assertEqual(true)
+      expect(customDecoder.ignoreBOM).assertEqual(true)
     })
 
 
