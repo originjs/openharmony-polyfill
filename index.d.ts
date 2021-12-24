@@ -72,3 +72,15 @@ declare class URL {
 
     toJSON(): string;
 }
+
+declare class localStorage {
+
+    static clear(): void;
+
+    static getItem(key: string): string | null;
+
+    static removeItem(key: string): void;
+
+    static setItem(key: string, value: string): void;
+}
+
