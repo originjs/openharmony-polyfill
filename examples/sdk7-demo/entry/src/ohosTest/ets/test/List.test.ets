@@ -1,3 +1,4 @@
+import URLSearchParamsPolyfillJsunit from './URLSearchParamsPolyfillJsunit.ets';
 import URLPolyfillJsunit from './URLPolyfillJsunit.ets';
 import TextEncoderPolyfillJsunit from './TextEncoderPolyfillJsunit.ets';
 import TextDecoderPolyfillJsunit from './TextDecoderPolyfillJsunit.ets';
@@ -8,4 +9,5 @@ export default function testsuite() {
   TextDecoderPolyfillJsunit()
   TextEncoderPolyfillJsunit()
   URLPolyfillJsunit()
+  URLSearchParamsPolyfillJsunit()
 }
