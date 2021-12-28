@@ -1,3 +1,14 @@
+# [0.3.0](https://gitee.com/originjs/openharmony-polyfill/compare/v0.2.0...v0.3.0) (2021-12-28)
+
+
+### Features
+
+* add index.d.ts and remove ts-ignore ([73e9214](https://gitee.com/originjs/openharmony-polyfill/commits/73e9214dac56389b1d6cf4fcee246243c241996b))
+* add localStorage index.d.ts ([544118e](https://gitee.com/originjs/openharmony-polyfill/commits/544118e157273dd15ebae4425a27b2142285d6b2))
+* add URLSearchParamsPolyfill ([ec389b6](https://gitee.com/originjs/openharmony-polyfill/commits/ec389b649fc0a616144b3d4bda7cc5942bb361ea))
+
+
+
 # [0.2.0](https://gitee.com/originjs/openharmony-polyfill/compare/v0.1.0...v0.2.0) (2021-12-22)
 
 
