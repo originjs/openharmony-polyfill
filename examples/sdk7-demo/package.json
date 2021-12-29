@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@originjs/protobufjs": "^6.10.2",
     "axios": "^0.24.0",
     "openharmony-polyfill": "file:../.."
   }

@@ -17,14 +17,18 @@
       "tablet",
       "car"
     ],
-    "reqPermissions": [{
-      "name": "ohos.permission.INTERNET",
-      "reason": "http",
-      "usedScene": {
-        "ability": ["org.originjs.openharmony.polyfilldemo.MainAbility"],
-        "when": "always"
+    "reqPermissions": [
+      {
+        "name": "ohos.permission.INTERNET",
+        "reason": "http",
+        "usedScene": {
+          "ability": [
+            "org.originjs.openharmony.polyfilldemo.MainAbility"
+          ],
+          "when": "always"
+        }
       }
-    }],
+    ],
     "distro": {
       "deliveryWithInstall": true,
       "moduleName": "entry",
@@ -59,7 +63,10 @@
           "type": "pageAbility"
         },
         "pages": [
-          "pages/index"
+          "pages/index",
+          "pages/network",
+          "pages/textutil",
+          "pages/protobuf"
         ],
         "name": "default",
         "window": {
