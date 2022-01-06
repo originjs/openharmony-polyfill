@@ -5,3 +5,4 @@ import './TextEncoderPolyfill';
 import './TextDecoderPolyfill';
 import './XMLHttpRequestPolyfill';
 import './FetchPolyfill';
+import './Crypto';

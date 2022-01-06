@@ -1,5 +1,6 @@
 import http from '@ohos.net.http';
 import * as JSON5 from 'json5';
+import { StatusMap } from './lib/StatusMap';
 
 const DEFAULT_REFERRER_POLICY = 'strict-origin-when-cross-origin';
 function normalizeName(name) {
@@ -170,26 +171,93 @@ class Headers {
 }
 
 /**
+ * The ReadableStream interface of the Streams API represents a readable stream of byte data. The Fetch
+ * API offers a concrete instance of a ReadableStream through the body property of a Response object.
+ */
+class ReadableStream {
+  body;
+  constructor(body) {
+    this.body = body;
+  }
+
+  get locked() {
+    return false;
+  }
+
+  /**
+   * Returns a Promise that resolves when the stream is canceled. Calling this method signals a loss of
+   * interest in the stream by a consumer.
+   * @returns
+   */
+  async cancel() {
+    return;
+  }
+
+  /**
+   * Creates a reader and locks the stream to it. While the stream is locked, no other reader can be
+   * acquired until this one is released.
+   */
+  getReader() {
+    return new ReadableStreamDefaultReader(this);
+  }
+}
+
+/**
+ * The ReadableStreamDefaultReader interface of the Streams API represents a default reader that can
+ * be used to read stream data supplied from a network (e.g. a fetch request).
+ */
+class ReadableStreamDefaultReader {
+  #body;
+
+  constructor(stream) {
+    this.#body = stream.body;
+  }
+
+  async cancel() {
+    return;
+  }
+
+  async read() {
+    if (typeof this.#body === 'string') {
+      const array = new Uint8Array(this.#body.length);
+      for (let i = 0; i < this.#body.length; i++) {
+        array[i] = this.#body.charCodeAt(i);
+      }
+      return { value: array, done: true };
+    } else {
+      return { value: this.#body, done: true };
+    }
+  }
+
+  releaseLock() {
+    return;
+  }
+}
+
+/**
  * Body class provides common methods for Request and Response
  * @see https://fetch.spec.whatwg.org/#body
  */
 class Body {
-  #bodyText;
-  #bodyBuffer;
+  #body;
   #bodyUsed = false;
+  _bodyType;
 
   constructor(body) {
     if (!body) {
-      this.#bodyText = '';
+      this.#body = '';
     } else if (typeof body === 'string') {
-      this.#bodyText = body;
+      this.#body = body;
+      this._bodyType = 'text';
     } else if (
       Object.prototype.isPrototypeOf.call(ArrayBuffer, body) ||
       ArrayBuffer.isView(body)
     ) {
-      this.#bodyBuffer = this._bufferClone(body);
+      this.#body = this._bufferClone(body);
+      this._bodyType = 'blob';
     } else {
-      this._bodyText = Object.prototype.toString.call(body);
+      this.#body = JSON.stringify(body);
+      this._bodyType = 'text';
     }
   }
 
@@ -197,7 +265,11 @@ class Body {
    * A ReadableStream of the body contents.
    */
   get body() {
-    return this.#bodyBuffer;
+    return new ReadableStream(this.#body);
+  }
+
+  get _body() {
+    return this.#body;
   }
 
   /**
@@ -213,16 +285,15 @@ class Body {
    */
   async text() {
     this._consumeBody();
-    if (this._bodyArrayBuffer) {
-      const view = new Uint8Array(this._bodyArrayBuffer);
+    if (this._bodyType === 'blob') {
+      const view = new Uint8Array(this.#body);
       let chars = new Array(view.length);
       for (var i = 0; i < view.length; i++) {
         chars[i] = String.fromCharCode(view[i]);
       }
       return chars.join('');
-    }
-    {
-      return this.#bodyText;
+    } else {
+      return this.#body;
     }
   }
 
@@ -237,17 +308,26 @@ class Body {
 
   /**
    * Returns a promise that resolves with an ArrayBuffer representation of the response body.
+   * @returns Promise
    */
   async arrayBuffer() {
     this._consumeBody();
-    if (this.#bodyBuffer) {
-      if (ArrayBuffer.isView(this.#bodyBuffer)) {
-        const { buffer, byteOffset, byteLength } = this.#bodyBuffer;
+    if (this._bodyType === 'blob') {
+      if (ArrayBuffer.isView(this.#body)) {
+        const { buffer, byteOffset, byteLength } = this.#body;
         return buffer.slice(byteOffset, byteOffset + byteLength);
       } else {
-        return this.#bodyBuffer;
+        return this.#body;
       }
     }
+  }
+
+  /**
+   * Returns a promise that resolves with a Blob representation of the response body.
+   * @returns Promise
+   */
+  async blob() {
+    return this.#body;
   }
 
   _consumeBody() {
@@ -295,22 +375,14 @@ class Request extends Body {
     const inputBody = init.body
       ? init.body
       : input instanceof Request
-      ? input
+      ? input._body
       : null;
     if ((method === 'GET' || method === 'HEAD') && inputBody) {
       throw new TypeError('Body not allowed for GET or HEAD requests');
     }
     super(inputBody);
 
-    if (input instanceof Request) {
-      if (input.bodyUsed) {
-        throw new TypeError('Already read');
-      }
-      this.#url = input.url;
-    } else {
-      this.#url = String(input);
-    }
-
+    this.#url = input instanceof Request ? input.url : String(input);
     this.#credentials = init.credentials || input.credentials || 'same-origin';
     this.#headers = new Headers(init.headers || input.headers || {});
     this.#method = method;
@@ -400,7 +472,6 @@ class Request extends Body {
 class Response extends Body {
   #type;
   #status;
-  #statusText;
   #ok;
   #headers;
   #url;
@@ -414,8 +485,6 @@ class Response extends Body {
     this.#type = 'default';
     this.#status = init.status === undefined ? 200 : init.status;
     this.#ok = this.#status >= 200 && this.#status < 300;
-    this.#statusText =
-      init.statusText === undefined ? '' : '' + init.statusText;
     this.#headers = new Headers(init.headers);
     this.#url = init.url || '';
   }
@@ -444,7 +513,7 @@ class Response extends Body {
    * The status message corresponding to the status code. (e.g., OK for 200).
    */
   get statusText() {
-    return this.#statusText;
+    return StatusMap[this.#status];
   }
 
   /**
@@ -468,7 +537,6 @@ class Response extends Body {
   clone() {
     return new Response(this._bodyInit, {
       status: this.status,
-      statusText: this.statusText,
       headers: new Headers(this.headers),
       url: this.url
     });
@@ -479,7 +547,7 @@ class Response extends Body {
    * @returns
    */
   error() {
-    const response = new Response(null, { status: 0, statusText: '' });
+    const response = new Response(null, { status: 0 });
     response.#type = 'error';
     return response;
   }
@@ -517,17 +585,11 @@ class FetchError extends Error {
 function getHarmonyRequestOptions(request) {
   const headers = {};
 
-  let contentLengthValue = null;
-  if (!request.body && /^(post|put)$/i.test(request.method)) {
-    contentLengthValue = '0';
+  if (request._body && request._bodyType === 'blob') {
+    const totalBytes = request._body.length;
+    headers['Content-Length'] = String(totalBytes);
   }
-  if (request.body) {
-    const totalBytes = request.body.length;
-    contentLengthValue = String(totalBytes);
-  }
-  if (contentLengthValue) {
-    headers['Content-Length'] = contentLengthValue;
-  }
+
   if (request.referrerPolicy === '') {
     request.referrerPolicy = DEFAULT_REFERRER_POLICY;
   }
@@ -541,10 +603,14 @@ function getHarmonyRequestOptions(request) {
     headers['Accept-Encoding'] = 'gzip,deflate,br';
   }
 
+  request.headers.forEach((value, name) => {
+    headers[name] = value;
+  });
+
   return {
     method: request.method,
     header: headers,
-    extraData: request.body
+    extraData: request._body
   };
 }
 
@@ -575,7 +641,6 @@ function _fetch(resource, init) {
         const responseOpttions = {
           url: request.url,
           status: data.responseCode,
-          statusText: '' + data.responseCode,
           headers: data.header
         };
         resolve(new Response(body, responseOpttions));

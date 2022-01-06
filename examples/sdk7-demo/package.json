@@ -1,5 +1,8 @@
 {
   "dependencies": {
+    "@aws-sdk/client-cognito-identity": "^3.45.0",
+    "@aws-sdk/client-lambda": "^3.45.0",
+    "@aws-sdk/credential-provider-cognito-identity": "^3.45.0",
     "@originjs/protobufjs": "^6.10.2",
     "axios": "^0.24.0",
     "openharmony-polyfill": "file:../.."

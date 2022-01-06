@@ -1,7 +1,7 @@
 import http from '@ohos.net.http';
 import * as JSON5 from 'json5';
 import { EventTarget } from './lib/EventTarget';
-import { StatusMap } from './lib/statuscodes';
+import { StatusMap } from './lib/StatusMap';
 
 /**
  * The ProgressEvent interface represents events measuring progress of an underlying process, like an HTTP request
