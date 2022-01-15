@@ -30,6 +30,6 @@ import'openharmony-polyfill'
 4. For detailed usage, please refer to the examples in `examples`
    
 ## Tested Compatible Libraries
-* axios - [Example](examples\sdk7-demo\entry\src\main\ets\default\pages\network.ets)
-* protobufjs - [Example](examples\sdk7-demo\entry\src\main\ets\default\pages\protobuf.ets)
-* @aws-sdk - [Example](examples\sdk7-demo\entry\src\main\ets\default\pages\network.ets)
+* axios - [Example](examples/sdk7-demo/entry/src/main/ets/default/pages/network.ets)
+* protobufjs - [Example](examples/sdk7-demo/entry/src/main/ets/default/pages/protobuf.ets)
+* @aws-sdk - [Example](examples/sdk7-demo/entry/src/main/ets/default/pages/network.ets)
