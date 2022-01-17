@@ -6,3 +6,4 @@ import './TextDecoderPolyfill';
 import './XMLHttpRequestPolyfill';
 import './FetchPolyfill';
 import './Crypto';
+import './ProtobufPolyfill';
