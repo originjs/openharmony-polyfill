@@ -3,28 +3,28 @@ import * as autobahn from 'autobahn-browser'
 @Entry
 @Component
 struct Autobahn {
-  @State sub_msg: string= '';
-  @State app_result: string = '';
-  @State router_url: string = '';
+  @State subMsg: string= '';
+  @State appResult: string = '';
+  @State routerUrl: string = '';
 
   build() {
     Flex({ direction: FlexDirection.Column, alignItems: ItemAlign.Center, justifyContent: FlexAlign.Center }) {
       TextInput({
         placeholder: "Please input router url...",
-        text: this.router_url
+        text: this.routerUrl
       }).height(40)
         .onChange((value: string) => {
-        this.router_url = 'ws://' + value;
+        this.routerUrl = 'ws://' + value;
       })
       Button('Connect to router')
         .onClick(() => {
-          var connection = new autobahn.Connection({ url: this.router_url+'/nightlife', realm: 'realm1' });
+          var connection = new autobahn.Connection({ url: this.routerUrl+'/nightlife', realm: 'realm1' });
           connection.onopen = ((session) => {
 
             // 1) subscribe to a topic
             session.subscribe('harmonyos.hello', (args)=> {
               console.log("Event:", args[0]);
-              this.sub_msg = args[0];
+              this.subMsg = args[0];
             });
 
             // 2) publish an event
@@ -41,7 +41,7 @@ struct Autobahn {
             session.call('harmonyos.add2', [2, 3]).then(
               (res) => {
                 console.log("Result:", res);
-                this.app_result = res;
+                this.appResult = res;
               });
           });
 
@@ -49,9 +49,9 @@ struct Autobahn {
         })
         .fontSize(20)
         .fontWeight(FontWeight.Bold)
-      Text('Subscribed message: ' + this.sub_msg)
+      Text('Subscribed message: ' + this.subMsg)
         .fontSize(17);
-      Text('Application result: ' + this.app_result)
+      Text('Application result: ' + this.appResult)
         .fontSize(17);
     }
     .width('100%')
