@@ -34,5 +34,5 @@ import'openharmony-polyfill'
 * protobufjs - [Example](examples/sdk7-demo/entry/src/main/ets/default/pages/protobuf.ets)
 * @aws-sdk - [Example](examples/sdk7-demo/entry/src/main/ets/default/pages/network.ets)
 * autobahn 
-* - [Example](examples/sdk7-demo/entry/src/main/ets/default/pages/autobahn.ets)
-* - [Usage](examples/sdk7-demo/readme.md)
+    * [Example](examples/sdk7-demo/entry/src/main/ets/default/pages/autobahn.ets)
+    * [Usage](examples/sdk7-demo/readme.md)
