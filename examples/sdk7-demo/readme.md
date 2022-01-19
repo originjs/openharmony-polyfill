@@ -1,12 +1,12 @@
 # Demo Usage
 ## Autobahn
 ### 1. Set up WAMP router
-First choose the folder to install the router
+First choose the folder to install the router, use cd to get to it.
 Install WAMP router with(require access to github):
 ```
 npm install --save git+https://github.com/christian-raedel/nightlife-rabbit
 ```
-To install without github, unrar [node_modules.rar](examples/resources) to the folder to install server
+To install without github, unrar [node_modules.rar](examples/sdk7-demo/resources) to the folder to install server.
 
 Then create a autobahn_router.js file and copy the following to it:
 ```js
@@ -35,6 +35,7 @@ var router = nightlife.createRouter({
 });
 ```
 The default listening port is 3000, you can adjust it to your server settings. (The path shall not be changed as the demo is using it)
+
 Finally, run the following to start the router:
 ```
 node autobahn_router.js
@@ -48,3 +49,9 @@ The demo will execute four function on clicking the button:
 * Publish "Hello, this is harmonyOS!" onto the topic 'harmonyos.hello'
 * Register a function for calling. The function's name is add2 and will add two numbers given by caller and return the result
 * Call the function add2 with 2 and 3 as input
+
+The expected result is to see:
+
+Subscription message: Hello, this is harmonyOS!
+
+Application result: 5
