@@ -6,9 +6,17 @@ struct Autobahn {
   @State subMsg: string= '';
   @State appResult: string = '';
   @State routerUrl: string = '';
+  @State connectState: string = 'Disconnected';
+  @State subTopic: string ='default';
+  @State pubTopic: string = 'default';
+  @State pubText: string = '';
+  connection: any = null;
 
   build() {
     Flex({ direction: FlexDirection.Column, alignItems: ItemAlign.Center, justifyContent: FlexAlign.Center }) {
+      Text(this.connectState).fontSize(25)
+      Text('Please input router url:').fontSize(20)
+
       TextInput({
         placeholder: "Please input router url...",
         text: this.routerUrl
@@ -16,43 +24,77 @@ struct Autobahn {
         .onChange((value: string) => {
         this.routerUrl = 'ws://' + value;
       })
+
       Button('Connect to router')
         .onClick(() => {
-          var connection = new autobahn.Connection({ url: this.routerUrl+'/nightlife', realm: 'realm1' });
-          connection.onopen = ((session) => {
+          this.connection = new autobahn.Connection({ url: this.routerUrl+'/nightlife', realm: 'realm1' });
+          this.connection.onopen = ((session) => {
+            if (session.isOpen)
+                    this.connectState='Connected';
+          })
+          this.connection.onclose = ((reason: string, details: object)=>{
+            console.log(reason);
+            this.connectState = 'Disconnected';
+          })
+          this.connection.open();
+          })
+      .fontSize(15)
+      .fontWeight(FontWeight.Bold)
 
-            // 1) subscribe to a topic
-            session.subscribe('harmonyos.hello', (args)=> {
+      Divider()
+
+      Button('Subscribe')
+      .onClick(()=>{
+          this.connection.session.subscribe(this.subTopic, (args)=> {
               console.log("Event:", args[0]);
               this.subMsg = args[0];
             });
+      })
 
-            // 2) publish an event
-            session.publish('harmonyos.hello', ['Hello, this is harmonyOS!']);
+      Text('Subscribed message: ' + this.subMsg)
+        .fontSize(20)
 
-            // 3) register a procedure for remoting
-            function add2(args) {
-              return args[0] + args[1];
-            }
+      Divider()
 
-            session.register('harmonyos.add2', add2);
+      Text('Publish Text')
+        .fontSize(15)
+      TextInput({
+        placeholder: "Please input text to publish...",
+        text: this.pubText
+      }).height(40)
+        .onChange((value: string) => {
+        this.pubText = value;
+      })
 
-            // 4) call a remote procedure
-            session.call('harmonyos.add2', [2, 3]).then(
-              (res) => {
+      Button('Publish')
+      .onClick(()=>{
+        if(!(this.pubText===''))
+          this.connection.session.publish(this.pubTopic, [this.pubText]);
+      })
+
+      Divider()
+      Text('Press Register to set the add function').fontSize(15)
+      Button('Register')
+      .onClick(()=>{
+        function add2(args){
+            return (parseInt(args[0]) + parseInt(args[1])).toString();
+        }
+
+        this.connection.session.register('harmonyos.add2', add2);
+      })
+      Divider()
+
+      Button('Call(Add)')
+      .onClick(()=>{
+        this.connection.session.call('harmonyos.add2', [2, 3]).then(
+            (res) => {
                 console.log("Result:", res);
                 this.appResult = res;
               });
-          });
+      })
 
-          connection.open();
-        })
+      Text('Application result: 2+3=' + this.appResult)
         .fontSize(20)
-        .fontWeight(FontWeight.Bold)
-      Text('Subscribed message: ' + this.subMsg)
-        .fontSize(17);
-      Text('Application result: ' + this.appResult)
-        .fontSize(17);
     }
     .width('100%')
     .height('100%')

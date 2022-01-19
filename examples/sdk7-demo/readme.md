@@ -45,13 +45,13 @@ Your router is all set to listen!
 ### 2. How the demo works
 Input the url of your server and press connect to router.
 The demo will execute four function on clicking the button:
-* Subscribe a topic 'harmonyos.hello')
-* Publish "Hello, this is harmonyOS!" onto the topic 'harmonyos.hello'
-* Register a function for calling. The function's name is add2 and will add two numbers given by caller and return the result
+* Subscribe: Subscribe a topic, you will receive any messages sent on the topic 'default'
+* Publish: Publish the input text onto the topic 'default'
+* Register: Register a function for calling. The function's name is add2 and will add two numbers given by caller and return the result
 * Call the function add2 with 2 and 3 as input
 
 The expected result is to see:
 
-Subscription message: Hello, this is harmonyOS!
+Subscription message: "Text input by user"
 
-Application result: 5
+Application result: 2+3=5
