@@ -4,6 +4,7 @@
     "@aws-sdk/client-lambda": "^3.45.0",
     "@aws-sdk/credential-provider-cognito-identity": "^3.45.0",
     "@originjs/protobufjs": "^6.10.2",
+    "autobahn-browser": "^20.9.2",
     "axios": "^0.24.0",
     "js-base64": "^3.7.2",
     "openharmony-polyfill": "file:../.."
