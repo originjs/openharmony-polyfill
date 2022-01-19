@@ -13,7 +13,8 @@ struct Index {
     { name: 'Network', page: 'pages/network' },
     { name: 'Text Encoder/Decoder', page: 'pages/textutil' },
     { name: 'Protobuf', page: 'pages/protobuf' },
-    { name: 'FS', page: 'pages/fs' }
+    { name: 'FS', page: 'pages/fs' },
+    { name: 'Autobahn', page: 'pages/autobahn'}
   ]
 
   build() {

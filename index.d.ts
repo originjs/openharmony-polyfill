@@ -106,3 +106,34 @@ declare class URLSearchParams {
     forEach(callbackfn: (value: string, key: string, parent: URLSearchParams) => void, thisArg?: any): void;
 }
 
+declare class WebSocket{
+    constructor(url: string, protocols?: string | string[]);
+
+    binaryType: string;
+
+    readonly bufferedAmount: number;
+
+    readonly extensions: string;
+
+    readonly protocol: string;
+
+    readonly readyState: number;
+
+    readonly url: string;
+
+    close(code?: number, reason?: string): void;
+
+    send(data: string | ArrayBuffer | number[]): void;
+
+    addEventListener(type: string, listener:()=>void): void;
+
+    dispatchEvent(event:()=>void);
+
+    onopen(type: string, data: string);
+
+    onmessage(type: string, data: string);
+
+    onclose(type: string, data: string);
+
+    onerror(type: string, data: string);
+}

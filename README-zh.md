@@ -32,3 +32,6 @@ import 'openharmony-polyfill'
 * axios - [示例](examples/sdk7-demo/entry/src/main/ets/default/pages/network.ets)
 * protobufjs - [示例](examples/sdk7-demo/entry/src/main/ets/default/pages/protobuf.ets)
 * @aws-sdk - [示例](examples/sdk7-demo/entry/src/main/ets/default/pages/network.ets)
+* autobahn 
+* - [示例](examples/sdk7-demo/entry/src/main/ets/default/pages/autobahn.ets)
+* - [使用](examples/sdk7-demo/readme.md)
