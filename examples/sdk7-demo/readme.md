@@ -6,7 +6,7 @@ Install WAMP router with(require access to github):
 ```
 npm install --save git+https://github.com/christian-raedel/nightlife-rabbit
 ```
-To install without github, unrar [node_modules.rar](examples/sdk7-demo/resources) to the folder to install server.
+To install without github, unrar [node_modules.rar](../../examples/sdk7-demo/resources) to the folder to install server.
 
 Then create a autobahn_router.js file and copy the following to it:
 ```js
