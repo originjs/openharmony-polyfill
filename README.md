@@ -7,7 +7,7 @@ This project is a polyfill that implements a subset of the standard web interfac
 * ✅ TextDecoder
 * ✅ TextEncoder
 * ✅ URL API
-* ✅ Protocol Buffers 
+* ⚠️ File System 
 * ⚠️ Web Storage
 * ❌ Web Workers
 

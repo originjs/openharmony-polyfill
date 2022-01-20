@@ -7,6 +7,7 @@
 * ✅ TextDecoder
 * ✅ TextEncoder
 * ✅ URL API
+* ⚠️ File System
 * ⚠️ Web Storage
 * ❌ Web Workers
 
