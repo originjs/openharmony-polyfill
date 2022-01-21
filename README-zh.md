@@ -1,17 +1,19 @@
 [English](./README.md) | 简体中文
 # OpenHarmony Polyfill
-提供标准Web接口的Openharmony Polyfill，目前包括如下API：
-* ✅ XMLHttpRequest
-* ✅ fetch
-* ✅ WebSocket
-* ✅ TextDecoder
-* ✅ TextEncoder
-* ✅ URL API
-* ⚠️ File System
-* ⚠️ Web Storage
-* ❌ Web Workers
+提供标准Web接口的Openharmony Polyfill适配，目前包括如下[Web APIs](https://developer.mozilla.org/en-US/docs/Web/API)：
+* ✅ [XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest)
+* ✅ [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
+* ✅ [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)
+* ✅ [TextDecoder](https://developer.mozilla.org/en-US/docs/Web/API/TextDecoder)
+* ✅ [TextEncoder](https://developer.mozilla.org/en-US/docs/Web/API/TextEncoder)
+* ✅ [URL API](https://developer.mozilla.org/en-US/docs/Web/API/URL)
+* ⚠️ [Web Storage API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API)
+* ❌ [Web Workers API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)
 
-| 图标 | 描述 |
+Node.js API 兼容：
+* ⚠️ [File System](https://nodejs.org/docs/latest-v16.x/api/fs.html#file-system)
+
+| 图例 | 描述 |
 | ---- | ---- |
 |✅|已实现|
 |⚠️|部分实现|

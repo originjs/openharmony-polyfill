@@ -1,4 +1,5 @@
 import webSocket from '@ohos.net.webSocket';
+import { EventTarget } from './lib/EventTarget';
 
 const BINARY_TYPE = { blob: 'blob', arraybuffer: 'arraybuffer' };
 const READY_STATE = { CONNECTING: 0, OPEN: 1, CLOSING: 2, CLOSED: 3 };
@@ -16,7 +17,7 @@ const harmonyWS = WebSocket;
  * @see https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
  *
  */
-class _WebSocket {
+class _WebSocket extends EventTarget {
   #url = '';
   #protocols = [''];
   #binaryType = BINARY_TYPE.blob;
@@ -26,7 +27,6 @@ class _WebSocket {
   #protocol;
   #readyState;
   #header = {};
-  #listeners = {};
 
   /**
    *The WebSocket() constructor returns a new WebSocket object.
@@ -34,6 +34,7 @@ class _WebSocket {
    * @param {string[]} protocols - Either a single protocol string or an array of protocol strings.
    */
   constructor(url, protocols) {
+    super();
     this.#url = url;
 
     if (protocols && protocols.length) {
@@ -135,28 +136,6 @@ class _WebSocket {
         console.error(`send error:${value}`);
       }
     });
-  }
-
-  addEventListener(type, listener) {
-    let listeners = this.#listeners;
-    if (listeners[type] === undefined) {
-      listeners[type] = [];
-    }
-    if (listeners[type].indexOf(listener) === -1) {
-      listeners[type].push(listener);
-    }
-  }
-
-  dispatchEvent(event) {
-    let listeners = this.#listeners;
-    var listenerArray = listeners[event.type];
-    if (listenerArray !== undefined) {
-      event.target = this;
-      let array = listenerArray.slice(0);
-      for (let i = 0, l = array.length; i < l; i++) {
-        array[i].call(this.event);
-      }
-    }
   }
 
   /**

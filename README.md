@@ -1,15 +1,17 @@
 English | [简体中文](./README-zh.md)
 # OpenHarmony Polyfill
-This project is a polyfill that implements a subset of the standard web interface for OpenHarmony, currently includes the following APIs:
-* ✅ XMLHttpRequest
-* ✅ fetch
-* ✅ WebSocket
-* ✅ TextDecoder
-* ✅ TextEncoder
-* ✅ URL API
-* ⚠️ File System 
-* ⚠️ Web Storage
-* ❌ Web Workers
+This project is a polyfill that implements a subset of the standard web interface for OpenHarmony, currently includes the following [Web APIs](https://developer.mozilla.org/en-US/docs/Web/API):
+* ✅ [XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest)
+* ✅ [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
+* ✅ [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)
+* ✅ [TextDecoder](https://developer.mozilla.org/en-US/docs/Web/API/TextDecoder)
+* ✅ [TextEncoder](https://developer.mozilla.org/en-US/docs/Web/API/TextEncoder)
+* ✅ [URL API](https://developer.mozilla.org/en-US/docs/Web/API/URL)
+* ⚠️ [Web Storage API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API)
+* ❌ [Web Workers API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)
+
+Node.js API includes：
+* ⚠️ [File System](https://nodejs.org/docs/latest-v16.x/api/fs.html#file-system)
 
 | Icon | Description |
 | ---- | ---- |
@@ -27,7 +29,7 @@ npm install openharmony-polyfill --save
 ```js
 import'openharmony-polyfill'
 ```
-3. Now you can use the standard Web API interface in the source code, such as `XMLHttpRequest`, or you can use third-party libraries that call the standard Web API, such as `axios`
+3. Now you can use the standard Web API interface in your source code, such as `XMLHttpRequest`, or you can use third-party libraries that call the standard Web API, such as `axios`
 4. For detailed usage, please refer to the examples in `examples`
    
 ## Tested Compatible Libraries
