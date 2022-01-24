@@ -1,3 +1,13 @@
+# [0.4.0](https://gitee.com/originjs/openharmony-polyfill/compare/v0.3.0...v0.4.0) (2022-01-24)
+
+
+### Features
+
+* add fs polyfill ([7622468](https://gitee.com/originjs/openharmony-polyfill/commits/76224682ab46e4b1c99f358fe4fad77045a641a9))
+* add support fro aws-sdk-js ([4adbef1](https://gitee.com/originjs/openharmony-polyfill/commits/4adbef15190bae1335d5dc860096b97abab0b475))
+
+
+
 # [0.3.0](https://gitee.com/originjs/openharmony-polyfill/compare/v0.2.0...v0.3.0) (2021-12-28)
 
 
