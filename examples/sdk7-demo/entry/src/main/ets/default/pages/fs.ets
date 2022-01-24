@@ -1,6 +1,5 @@
 import fileio from '@ohos.fileio';
 import ability_featureAbility from '@ohos.ability.featureAbility'
-import * as protobuf from "@originjs/protobufjs";
 
 @Entry
 @Component
@@ -94,10 +93,6 @@ struct FSPage {
       })
       Button('写入文件').onClick(async () => {
         try {
-          // @ts-ignore
-          // const message = require("fs");
-          //this.text = message.msg;
-
           let fd = fileio.openSync(this.path, 0o102, 0o666);
           let num = fileio.writeSync(fd, this.text);
           console.info('write success: ' + num);
@@ -114,7 +109,6 @@ struct FSPage {
         try {
           let fs = this.getFs();
           fs.readFileSync(this.path, { flag: 'r' })
-          //this.readText = fileio.readTextSync(this.path);
           this.status = "读文件成功";
         } catch (err) {
           this.status = "读文件失败";
@@ -134,93 +128,6 @@ struct FSPage {
         }
 
       }).alignSelf(ItemAlign.Center)
-      Button('异步读取protobuf文件').onClick(() => {
-        let fs = this.getFs();
-        const str = fs.readFileSync(this.protoFilePath, { encoding: 'utf-8' });
-        this.readText = <string> str;
-
-        protobuf.load(this.protoFilePath, function (err, root) {
-          if (err)
-          throw err;
-
-          // Obtain a message type
-          var AwesomeMessage = root.lookupType("awesomepackage.AwesomeMessage");
-
-          // Exemplary payload
-          var payload = { awesomeField: "AwesomeString" };
-
-          // Verify the payload if necessary (i.e. when possibly incomplete or invalid)
-          var errMsg = AwesomeMessage.verify(payload);
-          if (errMsg)
-          throw Error(errMsg);
-
-          // Create a new message
-          var message = AwesomeMessage.create(payload); // or use .fromObject if conversion is necessary
-
-          // Encode a message to an Uint8Array (browser) or Buffer (node)
-          var buffer = AwesomeMessage.encode(message).finish();
-          // ... do something with buffer
-
-          // Decode an Uint8Array (browser) or Buffer (node) to a message
-          var message = AwesomeMessage.decode(buffer);
-          // ... do something with message
-
-          // If the application uses length-delimited buffers, there is also encodeDelimited and decodeDelimited.
-
-          // Maybe convert the message back to a plain object
-          var object = AwesomeMessage.toObject(message, {
-            longs: String,
-            enums: String,
-            bytes: String,
-            // see ConversionOptions
-          });
-        });
-      })
-      Button('同步读取protobuf文件').onClick(() => {
-        let fs = this.getFs();
-        const str = fs.readFileSync(this.protoFilePath, { encoding: 'utf-8' });
-        this.readText = <string> str;
-
-        const a = Boolean(typeof global !== "undefined"
-        && global
-        && global.process
-        && global.process.versions
-        && global.process.versions.node);
-
-        // protobuf.util.isNode = true;
-        const root = protobuf.loadSync(this.protoFilePath);
-        // Obtain a message type
-        var AwesomeMessage = root.lookupType("awesomepackage.AwesomeMessage");
-
-        // Exemplary payload
-        var payload = { awesomeField: "AwesomeString" };
-
-        // Verify the payload if necessary (i.e. when possibly incomplete or invalid)
-        var errMsg = AwesomeMessage.verify(payload);
-        if (errMsg)
-        throw Error(errMsg);
-
-        // Create a new message
-        var message = AwesomeMessage.create(payload); // or use .fromObject if conversion is necessary
-
-        // Encode a message to an Uint8Array (browser) or Buffer (node)
-        var buffer = AwesomeMessage.encode(message).finish();
-        // ... do something with buffer
-
-        // Decode an Uint8Array (browser) or Buffer (node) to a message
-        var message = AwesomeMessage.decode(buffer);
-        // ... do something with message
-
-        // If the application uses length-delimited buffers, there is also encodeDelimited and decodeDelimited.
-
-        // Maybe convert the message back to a plain object
-        var object = AwesomeMessage.toObject(message, {
-          longs: String,
-          enums: String,
-          bytes: String,
-          // see ConversionOptions
-        });
-      })
     }
     .width('100%')
     .height('100%')
