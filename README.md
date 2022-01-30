@@ -7,6 +7,7 @@ This project is a polyfill that implements a subset of the standard web interfac
 * ✅ [TextDecoder](https://developer.mozilla.org/en-US/docs/Web/API/TextDecoder)
 * ✅ [TextEncoder](https://developer.mozilla.org/en-US/docs/Web/API/TextEncoder)
 * ✅ [URL API](https://developer.mozilla.org/en-US/docs/Web/API/URL)
+* ⚠️ [Web Crypto API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API)
 * ⚠️ [Web Storage API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API)
 * ❌ [Web Workers API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)
 
