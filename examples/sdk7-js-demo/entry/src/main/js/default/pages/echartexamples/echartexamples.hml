@@ -1,0 +1,7 @@
+<div class="container" style="height: {{divHeight}};">
+    <div for="{{examples}}">
+        <text class="title">{{$item.title}}</text>
+        <canvas></canvas>
+        <button if="{{!$item.isLoaded}}" no="{{$idx}}" class="buttons" type="capsule" onclick="showChart">加载</button>
+    </div>
+</div>

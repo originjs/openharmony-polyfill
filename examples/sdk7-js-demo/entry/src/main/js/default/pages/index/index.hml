@@ -1,0 +1,3 @@
+<div class="container">
+    <button class="button" type="capsule" onclick="gotoEchartExamples">echart示例</button>
+</div>

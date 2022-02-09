@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "echarts": "^5.3.0",
+    "openharmony-polyfill": "file:../.."
+  }
+}

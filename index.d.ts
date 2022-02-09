@@ -137,3 +137,8 @@ declare class WebSocket{
 
     onerror(type: string, data: string);
 }
+
+
+declare class HmCanvas {
+    constructor(parameters) {}
+}
