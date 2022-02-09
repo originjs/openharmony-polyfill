@@ -40,3 +40,4 @@ import'openharmony-polyfill'
 * autobahn 
     * [Example](examples/sdk7-demo/entry/src/main/ets/default/pages/autobahn.ets)
     * [Usage](examples/sdk7-demo/readme.md)
+* echarts(only js-sdk) - [Example](examples/sdk7-js-demo/entry/src/main/js/default/pages/echartexamples)
