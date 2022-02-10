@@ -91,18 +91,41 @@ struct FSPage {
       TextInput({ placeholder: "please...", text: this.text }).height(40).onChange((value: string) => {
         this.text = value;
       })
-      Button('写入文件').onClick(async () => {
-        try {
-          let fd = fileio.openSync(this.path, 0o102, 0o666);
-          let num = fileio.writeSync(fd, this.text);
-          console.info('write success: ' + num);
-          console.info('File directory :' + this.path);
-          this.status = "写入成功";
-        } catch (err) {
-          this.status = "写入失败";
-          console.error(err);
-        }
-      }).alignSelf(ItemAlign.Center)
+      Row(){
+        Button('覆写文件').onClick(async () => {
+          try {
+            let fs = this.getFs();
+            fs.writeFileSync(this.path, this.text);
+            console.info('File directory :' + this.path);
+            this.status = "覆写成功";
+          } catch (err) {
+            this.status = "覆写失败";
+            console.error(err);
+          }
+        }).alignSelf(ItemAlign.Center)
+        Button('加写文件').onClick(async () => {
+          try {
+            let fs = this.getFs();
+            fs.writeFileSync(this.path, this.text,{flag:'a'});
+            console.info('File directory :' + this.path);
+            this.status = "加写成功";
+          } catch (err) {
+            this.status = "加写失败";
+            console.error(err);
+          }
+        }).alignSelf(ItemAlign.Center)
+        Button('删除文件').onClick(()=>{
+          try{
+            let fs = this.getFs();
+            fs.unlinkSync(this.path);
+            this.status = "删除成功";
+          }catch(err){
+            this.status = "删除失败";
+            console.error(err);
+          }
+
+        })
+      }
       Text('读入文件内容：').fontSize(16).fontWeight(FontWeight.Bolder)
       Text(this.readText).fontSize(16).border({ width: 1, color: "red" }).width('100%')
       Button('读文件').onClick(async () => {
