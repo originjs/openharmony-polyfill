@@ -68,7 +68,8 @@
           "pages/textutil",
           "pages/protobuf",
           "pages/fs",
-          "pages/autobahn"
+          "pages/autobahn",
+          "pages/path"
         ],
         "name": "default",
         "window": {

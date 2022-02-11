@@ -14,7 +14,8 @@ struct Index {
     { name: 'Text Encoder/Decoder', page: 'pages/textutil' },
     { name: 'Protobuf', page: 'pages/protobuf' },
     { name: 'FS', page: 'pages/fs' },
-    { name: 'Autobahn', page: 'pages/autobahn'}
+    { name: 'Autobahn', page: 'pages/autobahn' },
+    { name: 'Path', page: 'pages/path' }
   ]
 
   build() {
