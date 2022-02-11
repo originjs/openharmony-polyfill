@@ -106,7 +106,7 @@ declare class URLSearchParams {
     forEach(callbackfn: (value: string, key: string, parent: URLSearchParams) => void, thisArg?: any): void;
 }
 
-declare class WebSocket{
+declare class WebSocket {
     constructor(url: string, protocols?: string | string[]);
 
     binaryType: string;
@@ -125,9 +125,9 @@ declare class WebSocket{
 
     send(data: string | ArrayBuffer | number[]): void;
 
-    addEventListener(type: string, listener:()=>void): void;
+    addEventListener(type: string, listener: () => void): void;
 
-    dispatchEvent(event:()=>void);
+    dispatchEvent(event: () => void);
 
     onopen(type: string, data: string);
 
@@ -136,6 +136,54 @@ declare class WebSocket{
     onclose(type: string, data: string);
 
     onerror(type: string, data: string);
+}
+
+
+/**
+ * from nodejs path.d.ts
+ */
+
+interface ParsedPath {
+    root: string;
+    dir: string;
+    base: string;
+    ext: string;
+    name: string;
+}
+
+interface FormatInputPathObject {
+    root?: string | undefined;
+    dir?: string | undefined;
+    base?: string | undefined;
+    ext?: string | undefined;
+    name?: string | undefined;
+}
+
+declare class path {
+    static normalize(p: string): string;
+
+    static join(...paths: string[]): string;
+
+    static resolve(...pathSegments: string[]): string;
+
+    static isAbsolute(p: string): boolean;
+
+    static relative(from: string, to: string): string;
+
+    static dirname(p: string): string;
+
+    static basename(p: string, ext?: string): string;
+
+    static extname(p: string): string;
+
+    static readonly sep: string;
+    static readonly delimiter: string;
+
+    static parse(p: string): ParsedPath;
+
+    static format(pP: FormatInputPathObject): string;
+
+    static toNamespacedPath(path: string): string;
 }
 
 

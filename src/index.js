@@ -8,4 +8,5 @@ import './FetchPolyfill';
 import './Crypto';
 import './ProtobufPolyfill';
 import './WebSocketPolyfill';
+import './PathPolyfill';
 import './CanvasPolyfill';
