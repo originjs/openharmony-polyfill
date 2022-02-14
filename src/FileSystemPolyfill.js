@@ -111,11 +111,76 @@ function existsSync(path) {
   }
 }
 
-function writeFileSync() {}
+/**
+ * Write data to files
+ * @param {string} file: path of the file
+ * @param {string} data: content of data to write
+ * @param {string | Object } [options = { encoding : 'utf-8', flag: 'w', mode: 0o666}] - The optional options argument can
+ * be a string specifying an encoding, or an object with an encoding property specifying the character encoding to use
+ * for the data written(now only utf8 is supported), a flag property specifying the mode to open the file and
+ * a mode property specifying the permission of the file if being created.
+ */
+function writeFileSync(file, data, options) {
+  if (!options) {
+    options = {};
+  }
+  if(!data || !data.toString || !data.toString()){
+    throw('Data input cannot be converted to string.');
+  }
+  var coding;
+  const flag = options.flag || 'w';
+  if (typeof options == 'string'){
+    coding = options;
+  }else{
+    coding = options.encoding || 'utf8';
+  }
+  const mode = options.mode || 0o666;
 
-function unlinkSync() {}
+  if(coding != 'utf8'){
+    throw('Only utf8 is supported to write');
+  }
 
-function createWriteStream() {}
+  const flagDic = {
+    'a': 1089,
+    'ax': 1217,
+    'a+': 1090,
+    'ax+': 1218,
+    'as': 1053761,
+    'as+': 1053762,
+    'r': 0,
+    'r+': 2,
+    'rs+': 1052674,
+    'w': 577,
+    'wx': 705,
+    'w+': 578,
+    'wx+': 706
+  };
+  try{
+    let fd = fileio.openSync(file, flagDic[flag], mode);
+    fileio.writeSync(fd,data.toString());
+  }catch(err){
+    console.error(err);
+    throw("Write File failed at " + file + "! " + err.name + ':' + err.message);
+  }
+}
+
+
+/**
+ * Delete a file
+ * @param {string | Buffer} path: The path of the file to delete
+ */
+function unlinkSync(path) {
+    try{
+      let file = path.toString();
+      fileio.unlinkSync(file);
+    }
+    catch(e){
+      //console.error(e);
+      throw ("Delete fail at "+path.toString()+"! "+e.name+": "+e.message);
+    }
+}
+
+function createWriteStream(){}
 
 /**
  * readFile callback
