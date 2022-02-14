@@ -91,24 +91,50 @@ struct FSPage {
       TextInput({ placeholder: "please...", text: this.text }).height(40).onChange((value: string) => {
         this.text = value;
       })
-      Button('写入文件').onClick(async () => {
-        try {
-          let fd = fileio.openSync(this.path, 0o102, 0o666);
-          let num = fileio.writeSync(fd, this.text);
-          console.info('write success: ' + num);
-          console.info('File directory :' + this.path);
-          this.status = "写入成功";
-        } catch (err) {
-          this.status = "写入失败";
-          console.error(err);
-        }
-      }).alignSelf(ItemAlign.Center)
+      Row(){
+        Button('覆写文件').onClick(async () => {
+          try {
+            let fs = this.getFs();
+            fs.writeFileSync(this.path, this.text);
+            console.info('File directory :' + this.path);
+            this.status = "覆写成功";
+          } catch (err) {
+            this.status = "覆写失败";
+            console.error(err);
+          }
+        }).alignSelf(ItemAlign.Center)
+        Button('加写文件').onClick(async () => {
+          try {
+            let fs = this.getFs();
+            fs.writeFileSync(this.path, this.text,{flag:'a'});
+            console.info('File directory :' + this.path);
+            this.status = "加写成功";
+          } catch (err) {
+            this.status = "加写失败";
+            console.error(err);
+          }
+        }).alignSelf(ItemAlign.Center)
+        Button('删除文件').onClick(()=>{
+          try{
+            let fs = this.getFs();
+            fs.unlinkSync(this.path);
+            this.status = "删除成功";
+          }
+//          catch(err){
+//            this.status = "删除失败";
+//            console.error(err);
+//          }
+
+        })
+      }
+
       Text('读入文件内容：').fontSize(16).fontWeight(FontWeight.Bolder)
       Text(this.readText).fontSize(16).border({ width: 1, color: "red" }).width('100%')
       Button('读文件').onClick(async () => {
         try {
           let fs = this.getFs();
-          fs.readFileSync(this.path, { flag: 'r' })
+          //this.readText = fs.readFileSync(this.path, { encoding: 'utf8', flag: 'r' })
+          this.readText = fileio.readTextSync(this.path);
           this.status = "读文件成功";
         } catch (err) {
           this.status = "读文件失败";
@@ -128,6 +154,93 @@ struct FSPage {
         }
 
       }).alignSelf(ItemAlign.Center)
+      Button('异步读取protobuf文件').onClick(() => {
+        let fs = this.getFs();
+        const str = fs.readFileSync(this.protoFilePath, { encoding: 'utf-8' });
+        this.readText = <string> str;
+
+        protobuf.load(this.protoFilePath, function (err, root) {
+          if (err)
+          throw err;
+
+          // Obtain a message type
+          var AwesomeMessage = root.lookupType("awesomepackage.AwesomeMessage");
+
+          // Exemplary payload
+          var payload = { awesomeField: "AwesomeString" };
+
+          // Verify the payload if necessary (i.e. when possibly incomplete or invalid)
+          var errMsg = AwesomeMessage.verify(payload);
+          if (errMsg)
+          throw Error(errMsg);
+
+          // Create a new message
+          var message = AwesomeMessage.create(payload); // or use .fromObject if conversion is necessary
+
+          // Encode a message to an Uint8Array (browser) or Buffer (node)
+          var buffer = AwesomeMessage.encode(message).finish();
+          // ... do something with buffer
+
+          // Decode an Uint8Array (browser) or Buffer (node) to a message
+          var message = AwesomeMessage.decode(buffer);
+          // ... do something with message
+
+          // If the application uses length-delimited buffers, there is also encodeDelimited and decodeDelimited.
+
+          // Maybe convert the message back to a plain object
+          var object = AwesomeMessage.toObject(message, {
+            longs: String,
+            enums: String,
+            bytes: String,
+            // see ConversionOptions
+          });
+        });
+      })
+      Button('同步读取protobuf文件').onClick(() => {
+        let fs = this.getFs();
+        const str = fs.readFileSync(this.protoFilePath, { encoding: 'utf-8' });
+        this.readText = <string> str;
+
+        const a = Boolean(typeof global !== "undefined"
+        && global
+        && global.process
+        && global.process.versions
+        && global.process.versions.node);
+
+        // protobuf.util.isNode = true;
+        const root = protobuf.loadSync(this.protoFilePath);
+        // Obtain a message type
+        var AwesomeMessage = root.lookupType("awesomepackage.AwesomeMessage");
+
+        // Exemplary payload
+        var payload = { awesomeField: "AwesomeString" };
+
+        // Verify the payload if necessary (i.e. when possibly incomplete or invalid)
+        var errMsg = AwesomeMessage.verify(payload);
+        if (errMsg)
+        throw Error(errMsg);
+
+        // Create a new message
+        var message = AwesomeMessage.create(payload); // or use .fromObject if conversion is necessary
+
+        // Encode a message to an Uint8Array (browser) or Buffer (node)
+        var buffer = AwesomeMessage.encode(message).finish();
+        // ... do something with buffer
+
+        // Decode an Uint8Array (browser) or Buffer (node) to a message
+        var message = AwesomeMessage.decode(buffer);
+        // ... do something with message
+
+        // If the application uses length-delimited buffers, there is also encodeDelimited and decodeDelimited.
+
+        // Maybe convert the message back to a plain object
+        var object = AwesomeMessage.toObject(message, {
+          longs: String,
+          enums: String,
+          bytes: String,
+          // see ConversionOptions
+        });
+      })
     }
     .width('100%')
     .height('100%')
