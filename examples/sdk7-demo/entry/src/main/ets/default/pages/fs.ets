@@ -91,7 +91,20 @@ struct FSPage {
       TextInput({ placeholder: "please...", text: this.text }).height(40).onChange((value: string) => {
         this.text = value;
       })
-      Row(){
+      Row() {
+        Button('从头写入').onClick(async () => {
+          let fs = this.getFs();
+          let fd = fileio.openSync(this.path, 65, 0o666);
+          fs.write(fd, this.text, (err, written, string) => {
+            if (err) {
+              this.status = "写入失败";
+              console.error(err);
+              throw ("Write failed at " + this.path + "!")
+            }
+            this.status = "写入成功";
+            console.info('File directory :' + this.path);
+          });
+        }).alignSelf(ItemAlign.Center)
         Button('覆写文件').onClick(async () => {
           try {
             let fs = this.getFs();
@@ -106,7 +119,7 @@ struct FSPage {
         Button('加写文件').onClick(async () => {
           try {
             let fs = this.getFs();
-            fs.writeFileSync(this.path, this.text,{flag:'a'});
+            fs.writeFileSync(this.path, this.text, { flag: 'a' });
             console.info('File directory :' + this.path);
             this.status = "加写成功";
           } catch (err) {
@@ -114,27 +127,25 @@ struct FSPage {
             console.error(err);
           }
         }).alignSelf(ItemAlign.Center)
-        Button('删除文件').onClick(()=>{
-          try{
+        Button('删除文件').onClick(() => {
+          try {
             let fs = this.getFs();
             fs.unlinkSync(this.path);
             this.status = "删除成功";
+          } catch (err) {
+            this.status = "删除失败";
+            console.error(err);
           }
-//          catch(err){
-//            this.status = "删除失败";
-//            console.error(err);
-//          }
 
         })
       }
-
       Text('读入文件内容：').fontSize(16).fontWeight(FontWeight.Bolder)
       Text(this.readText).fontSize(16).border({ width: 1, color: "red" }).width('100%')
       Button('读文件').onClick(async () => {
         try {
           let fs = this.getFs();
-          //this.readText = fs.readFileSync(this.path, { encoding: 'utf8', flag: 'r' })
-          this.readText = fileio.readTextSync(this.path);
+          this.readText = fs.readFileSync(this.path, { encoding: 'utf8', flag: 'r' })
+          //this.readText = fileio.readTextSync(this.path);
           this.status = "读文件成功";
         } catch (err) {
           this.status = "读文件失败";
