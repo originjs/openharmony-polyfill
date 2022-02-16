@@ -139,8 +139,45 @@ struct FSPage {
 
         })
       }
+      Row(){
+        Button('同步获取信息').onClick(() => {
+          try {
+            let fs = this.getFs();
+            let status = fs.statSync(this.path);
+            this.status = "同步获取成功";
+            this.readText = "";
+            for (let prop in status){
+              if ((status[prop].toString)&&(status[prop].toString())&&(typeof(status[prop])!='function'))
+              this.readText += prop + ': ' + status[prop].toString() + '\n';
+            }
+          } catch (err) {
+            this.status = "同步获取失败";
+            console.error(err);
+          }
+        })
+        Button('异步获取信息').onClick(() => {
+          let fs = this.getFs();
+          fs.stat(this.path)
+          .then((status)=>{
+            this.status = "异步获取成功";
+            this.readText = "";
+            for (let prop in status){
+              if ((status[prop].toString)&&(status[prop].toString())&&(typeof(status[prop])!='function'))
+              this.readText += prop + ': ' + status[prop].toString() + '\n';
+            }
+          })
+          .catch((err)=>{
+            this.status = "异步获取失败";
+            console.error(err);
+          })
+        })
+      }
       Text('读入文件内容：').fontSize(16).fontWeight(FontWeight.Bolder)
-      Text(this.readText).fontSize(16).border({ width: 1, color: "red" }).width('100%')
+      Scroll(){
+        Text(this.readText).fontSize(16)
+          .textOverflow({overflow:TextOverflow.None})
+          .border({ width: 1, color: "red" }).width('100%')
+      }
       Button('读文件').onClick(async () => {
         try {
           let fs = this.getFs();

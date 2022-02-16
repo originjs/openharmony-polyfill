@@ -14,8 +14,8 @@ const fileType = Symbol('type');
  * @returns {string[] | fileio.Dirent[]}
  */
 function readdirSync(path, options) {
-  if(!path || !path.toString || !path.toString()){
-    throw('Data input cannot be converted to string.');
+  if (!path || !path.toString || !path.toString()) {
+    throw 'Data input cannot be converted to string.';
   }
   const dirStream = fileio.opendirSync(path.toString());
   let dirent;
@@ -63,11 +63,11 @@ function readFileSync(path, options) {
   let Buffer = require('buffer').Buffer;
   const mode = options.flag || 'r';
   let stream;
-  if(Number.isInteger(path)){
+  if (Number.isInteger(path)) {
     stream = fileio.fdopenStreamSync(path, mode);
-  }else{
-    if(!path || !path.toString || !path.toString()){
-      throw('Data input cannot be converted to string.');
+  } else {
+    if (!path || !path.toString || !path.toString()) {
+      throw 'Data input cannot be converted to string.';
     }
     stream = fileio.createStreamSync(path.toString(), mode);
   }
@@ -110,18 +110,18 @@ function readFileSync(path, options) {
  * @param {string|buffer}path
  * @param {(boolean isExists)=>any}callback: isExists = true if the file exists, false otherwise
  */
-function exists(path, callback){
-  if(!path || !path.toString || !path.toString()){
-    throw('Data input cannot be converted to string.');
+function exists(path, callback) {
+  if (!path || !path.toString || !path.toString()) {
+    throw 'Data input cannot be converted to string.';
   }
-  fileio.access(path.toString(),(err)=>{
-    if(err){
+  fileio.access(path.toString(), (err) => {
+    if (err) {
       callback(false);
       console.error(err);
-    }else{
+    } else {
       callback(true);
     }
-  })
+  });
 }
 
 /**
@@ -130,8 +130,8 @@ function exists(path, callback){
  * @returns {boolean}
  */
 function existsSync(path) {
-  if(!path || !path.toString || !path.toString()){
-    throw('Data input cannot be converted to string.');
+  if (!path || !path.toString || !path.toString()) {
+    throw 'Data input cannot be converted to string.';
   }
   try {
     fileio.accessSync(path.toString());
@@ -144,9 +144,192 @@ function existsSync(path) {
   }
 }
 
-function statSync(path, options){
+/**
+ * stat
+ * @param {string|Buffer}path
+ * @param {object}options
+ * @param {function}callback
+ */
+function stat(path, options, callback) {
+  if (typeof options == 'function') {
+    callback = options;
+  }
+  if (!options) {
+    options = {};
+  }
 
+  if (typeof callback == 'function') {
+    statPromises(path, options)
+      .then((stat) => callback(null, stat))
+      .catch((err) => callback(err, null));
+  } else {
+    return statPromises(path, options);
+  }
 }
+
+function statPromises(path, options) {
+  function _statP(resolve, reject) {
+    let _bigint = options.bigint || false;
+    if (!path || !path.toString || !path.toString()) {
+      throw 'Data input cannot be converted to string.';
+    }
+
+    fileio.stat(path.toString(), async function (err, _stat) {
+      if (err) {
+        reject(err);
+        return;
+      }
+
+      let stat = {};
+      let prop = [
+        '_napiwrapper',
+        'dev',
+        'ino',
+        'mode',
+        'nlink',
+        'uid',
+        'gid',
+        'rdev',
+        'size',
+        'blocks',
+        'atime',
+        'mtime',
+        'ctime',
+        'isBlockDevice',
+        'isCharacterDevice',
+        'isDirectory',
+        'isFIFO',
+        'isFile',
+        'isSocket',
+        'isSymbolicLink'
+      ];
+      let time_prop = ['atime', 'mtime', 'ctime'];
+
+      try {
+        for (let property of prop) {
+          stat[property] = _stat[property];
+        }
+        if (_bigint) {
+          for (let status of time_prop) {
+            if (stat[status]) {
+              stat[status + 'Ms'] = stat[status];
+              stat[status + 'Ns'] = stat[status] * 1000000;
+              stat[status] = new Date();
+              stat[status].setTime(stat[status + 'Ms']);
+              prop.push(status + 'Ms', status + 'Ns');
+            }
+          }
+          for (let property of prop) {
+            if (!isNaN(stat[property])) {
+              stat[property] = BigInt(stat[property]);
+            }
+          }
+        } else {
+          for (let status of time_prop) {
+            if (stat[status]) {
+              stat[status + 'Ms'] = stat[status];
+              stat[status] = new Date();
+              stat[status].setTime(stat[status + 'Ms']);
+            }
+          }
+        }
+      } catch (err) {
+        reject(err);
+        return;
+      }
+
+      Object.freeze(stat);
+      resolve(stat);
+    });
+  }
+  const Promises = require('promise');
+  return new Promises(_statP);
+}
+
+/**
+ * statSync
+ * @param {string|Buffer}path
+ * @param {object}options
+ * @return {Stat}
+ */
+function statSync(path, options) {
+  if (!options) {
+    options = {};
+  }
+  let _bigint = options.bigint || false;
+  let _throwIfNoEntry = options.throwIfNoEntry || true;
+  if (!path || !path.toString || !path.toString()) {
+    throw 'Data input cannot be converted to string.';
+  }
+  try {
+    fileio.accessSync(path.toString());
+  } catch (err) {
+    if (_throwIfNoEntry) {
+      console.error(err);
+      throw err;
+    } else {
+      return undefined;
+    }
+  }
+
+  let _stat = fileio.statSync(path.toString());
+  let stat = {};
+  let prop = [
+    '_napiwrapper',
+    'dev',
+    'ino',
+    'mode',
+    'nlink',
+    'uid',
+    'gid',
+    'rdev',
+    'size',
+    'blocks',
+    'atime',
+    'mtime',
+    'ctime',
+    'isBlockDevice',
+    'isCharacterDevice',
+    'isDirectory',
+    'isFIFO',
+    'isFile',
+    'isSocket',
+    'isSymbolicLink'
+  ];
+  let time_prop = ['atime', 'mtime', 'ctime'];
+
+  for (let property of prop) {
+    stat[property] = _stat[property];
+  }
+  if (_bigint) {
+    for (let status of time_prop) {
+      if (stat[status]) {
+        stat[status + 'Ms'] = stat[status];
+        stat[status + 'Ns'] = stat[status] * 1000000;
+        stat[status] = new Date();
+        stat[status].setTime(stat[status + 'Ms']);
+        prop.push(status + 'Ms', status + 'Ns');
+      }
+    }
+    for (let property of prop) {
+      if (!isNaN(stat[property])) {
+        stat[property] = BigInt(stat[property]);
+      }
+    }
+  } else {
+    for (let status of time_prop) {
+      if (stat[status]) {
+        stat[status + 'Ms'] = stat[status];
+        stat[status] = new Date();
+        stat[status].setTime(stat[status + 'Ms']);
+      }
+    }
+  }
+
+  Object.freeze(stat);
+  return stat;
+}
+
 /**
  * write
  * @param {integer}fd
@@ -161,58 +344,58 @@ function statSync(path, options){
  */
 //Important Notice: If content is inserted behind any empty bytes(\0),
 //such content cannot be displayed because Openharmony cannot recognize '\0'
-function write(fd,buffer,offset,length,position,callback){
+function write(fd, buffer, offset, length, position, callback) {
   var options = {};
   //Another version of write is defined as:
   //fs.write(fd, string[, position[,encoding]], callback)
-  if (typeof buffer == 'string'){
-    if(typeof(offset) == 'function'){
+  if (typeof buffer == 'string') {
+    if (typeof offset == 'function') {
       callback = offset; //'offset' corresponds to callback
       options = {};
-    }else{
+    } else {
       options['position'] = offset; //'offset' corresponds to position
-      if(typeof(length)=='function'){
+      if (typeof length == 'function') {
         callback = length; //'length' corresponds to encoding
-      }else{
-        options['encoding']=length;
+      } else {
+        options['encoding'] = length;
       }
     }
-  }else{
-    if(!buffer || !buffer.toString || !buffer.toString()){
-      throw('Buffer input cannot be converted to string.');
+  } else {
+    if (!buffer || !buffer.toString || !buffer.toString()) {
+      throw 'Buffer input cannot be converted to string.';
     }
 
     if (typeof offset == 'function') {
       callback = offset;
       options = {};
-    }else{
+    } else {
       options['offset'] = offset;
-      if (typeof length == 'function'){
+      if (typeof length == 'function') {
         callback = length;
-      }else{
+      } else {
         options['length'] = length;
-        if(typeof position == 'function'){
+        if (typeof position == 'function') {
           callback = position;
-        }else{
+        } else {
           options['position'] = position;
         }
       }
     }
   }
 
-  if(options.position){
-    if(typeof(options.position)!='number'){
+  if (options.position) {
+    if (typeof options.position != 'number') {
       delete options.position;
     }
   }
-  if(options.encoding){
-    if (options.encoding != 'utf8'){
-      throw('Only utf8 is supported to write!');
+  if (options.encoding) {
+    if (options.encoding != 'utf8') {
+      throw 'Only utf8 is supported to write!';
     }
   }
-  fileio.write(fd,buffer,options,(err,bytesWritten)=>{
-    callback(err,bytesWritten,buffer);
-  })
+  fileio.write(fd, buffer, options, (err, bytesWritten) => {
+    callback(err, bytesWritten, buffer);
+  });
 }
 
 /**
@@ -228,78 +411,82 @@ function writeFileSync(file, data, options) {
   if (!options) {
     options = {};
   }
-  if(!data || !data.toString || !data.toString()){
-    throw('Data input cannot be converted to string.');
+  if (!data || !data.toString || !data.toString()) {
+    throw 'Data input cannot be converted to string.';
   }
   var coding;
   const flag = options.flag || 'w';
-  if (typeof options == 'string'){
+  if (typeof options == 'string') {
     coding = options;
-  }else{
+  } else {
     coding = options.encoding || 'utf8';
   }
   const mode = options.mode || 0o666;
 
-  if(coding != 'utf8'){
-    throw('Only utf8 is supported to write');
+  if (coding != 'utf8') {
+    throw 'Only utf8 is supported to write';
   }
 
   const flagDic = {
-    'a': 1089,
-    'ax': 1217,
+    a: 1089,
+    ax: 1217,
     'a+': 1090,
     'ax+': 1218,
-    'as': 1053761,
+    as: 1053761,
     'as+': 1053762,
-    'r': 0,
+    r: 0,
     'r+': 2,
     'rs+': 1052674,
-    'w': 577,
-    'wx': 705,
+    w: 577,
+    wx: 705,
     'w+': 578,
     'wx+': 706
   };
-  if(Number.isInteger(file)){
-    try{
-      fileio.writeSync(file,data.toString());
-    }catch(err){
+  if (Number.isInteger(file)) {
+    try {
+      fileio.writeSync(file, data.toString());
+    } catch (err) {
       console.error(err);
-      throw("Write File failed at " + file + "! " + err.name + ':' + err.message);
+      throw (
+        'Write File failed at ' + file + '! ' + err.name + ':' + err.message
+      );
     }
-  }else{
-    if(!file || !file.toString || !file.toString()){
-      throw('Data input cannot be converted to string.');
+  } else {
+    if (!file || !file.toString || !file.toString()) {
+      throw 'Data input cannot be converted to string.';
     }
-    try{
+    try {
       let fd = fileio.openSync(file.toString(), flagDic[flag], mode);
-      fileio.writeSync(fd,data.toString());
-    }catch(err){
+      fileio.writeSync(fd, data.toString());
+    } catch (err) {
       console.error(err);
-      throw("Write File failed at " + file + "! " + err.name + ':' + err.message);
+      throw (
+        'Write File failed at ' + file + '! ' + err.name + ':' + err.message
+      );
     }
   }
 }
-
 
 /**
  * Delete a file
  * @param {string | Buffer} path: The path of the file to delete
  */
 function unlinkSync(path) {
-  if(!path || !path.toString || !path.toString()){
-    throw('Data input cannot be converted to string.');
+  if (!path || !path.toString || !path.toString()) {
+    throw 'Data input cannot be converted to string.';
   }
-  try{
+  try {
     let file = path.toString();
     fileio.unlinkSync(file);
-  }
-  catch(e){
+  } catch (e) {
     console.error(e);
-    throw ("Delete fail at "+path.toString()+"! "+e.name+": "+e.message);
+    throw (
+      'Delete fail at ' + path.toString() + '! ' + e.name + ': ' + e.message
+    );
   }
 }
 
-function createWriteStream(){}
+function createWriteStream() {}
 
 /**
  * readFile callback
@@ -342,8 +529,8 @@ function readFilePromises(path, options) {
     let Buffer = require('buffer').Buffer;
     const mode = options.flag || 'r';
 
-    if(!path || !path.toString || !path.toString()){
-      throw('Data input cannot be converted to string.');
+    if (!path || !path.toString || !path.toString()) {
+      throw 'Data input cannot be converted to string.';
     }
     fileio.createStream(path.toString(), mode, async function (err, stream) {
       if (err) {
@@ -401,6 +588,7 @@ const harmonyFS = {
   readFileSync,
   exists,
   existsSync,
+  stat,
   statSync,
   write,
   writeFileSync,
