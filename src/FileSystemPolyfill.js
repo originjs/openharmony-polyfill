@@ -583,7 +583,110 @@ function readFilePromises(path, options) {
   return new Promises(_readFile);
 }
 
+/**
+ * If it is recursive mode returns the first created directory, otherwise it returns undefined
+ * @param {string} path
+ * @param { Object } [options = { recursive: false, mode: 0o777}]
+ */
+function mkdirSync(path, options) {
+  options = mkdirParamFormat(options);
+  if (options.recursive) {
+    // when options.recursive is true need to return the first created directory
+    const obj = {};
+    mkdirRecursive(path, options, obj);
+    return obj.path;
+  } else {
+    fileio.mkdirSync(path, options.mode);
+  }
+}
+
+/**
+ * If it is recursive mode returns the first created directory, otherwise it returns undefined
+ * @param {string} path
+ * @param { Object } [options = { recursive: false, mode: 0o777}]
+ * @param {function(err,[path]) } callback
+ */
+function mkdir(path, options, callback) {
+  options = mkdirParamFormat(options);
+  if (options.recursive) {
+    // when options.recursive is true need to return the first created directory
+    const obj = {};
+    mkdirRecursiveAsync(path, options, obj)
+      .then(() => {
+        callback(undefined, obj.path);
+      })
+      .catch((err) => {
+        callback(err, obj.path);
+      });
+  } else {
+    fileio.mkdir(path, options.mode, callback);
+  }
+}
+
+function mkdirRecursive(path, options, obj) {
+  try {
+    fileio.accessSync(path);
+    return true;
+  } catch (e) {
+    if (mkdirRecursive(dirname(path), options, obj)) {
+      fileio.mkdirSync(path, options.mode);
+      // record the first create path in recursive mode
+      obj.path = obj.path ?? path;
+      return true;
+    }
+  }
+}
+
+async function mkdirRecursiveAsync(path, options, obj) {
+  try {
+    await fileio.access(path);
+    return true;
+  } catch (e) {
+    if (await mkdirRecursiveAsync(dirname(path), options, obj)) {
+      await fileio.mkdir(path, options.mode);
+      obj.path = obj.path ?? path;
+      return true;
+    }
+  }
+}
+
+function mkdirParamFormat(options) {
+  options = options ?? {};
+  options.recursive = options.recursive ?? false;
+  options.mode = options.mode ?? 0o777;
+  if (typeof options.mode === 'string') {
+    options.mode = Number(options.mode);
+  }
+  return options;
+}
+
+function dirname(path) {
+  if (path.length === 0) return '.';
+  let code = path.charCodeAt(0);
+  const hasRoot = code === 47;
+  let end = -1;
+  let matchedSlash = true;
+  for (let i = path.length - 1; i >= 1; --i) {
+    code = path.charCodeAt(i);
+    if (code === 47) {
+      if (!matchedSlash) {
+        end = i;
+        break;
+      }
+    } else {
+      // We saw the first non-path separator
+      matchedSlash = false;
+    }
+  }
+
+  if (end === -1) return hasRoot ? '/' : '.';
+  if (hasRoot && end === 1) return '//';
+  return path.slice(0, end);
+}
+
 const harmonyFS = {
+  mkdirSync,
+  mkdir,
   readdirSync,
   readFileSync,
   exists,

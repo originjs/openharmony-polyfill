@@ -201,6 +201,29 @@ struct FSPage {
         }
 
       }).alignSelf(ItemAlign.Center)
+
+      Button('create folder sync').onClick(() => {
+        const fs = this.getFs();
+        const path = `${this.appDir}/dir1/dir2/dir3/dir4`;
+        try {
+          const returnValue = fs.mkdirSync(path, { recursive: true });
+          this.status = `create folder successfully(returnValue=${returnValue})`
+        } catch (e) {
+          this.status = 'create folder failed';
+        }
+      }).alignSelf(ItemAlign.Center)
+
+      Button('create folder async').onClick(() => {
+        const fs = this.getFs();
+        const path = `${this.appDir}/dir11/dir22/dir33/dir44`;
+        fs.mkdir(path, { recursive: true }, (err, returnValue) => {
+          if (!err) {
+            this.status = `create folder successfully(returnValue=${returnValue})`
+          } else {
+            this.status = 'create folder failed';
+          }
+        });
+      }).alignSelf(ItemAlign.Center)
     }
     .width('100%')
     .height('100%')
