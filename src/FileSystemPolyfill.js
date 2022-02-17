@@ -14,7 +14,10 @@ const fileType = Symbol('type');
  * @returns {string[] | fileio.Dirent[]}
  */
 function readdirSync(path, options) {
-  const dirStream = fileio.opendirSync(path);
+  if (!path || !path.toString || !path.toString()) {
+    throw 'Data input cannot be converted to string.';
+  }
+  const dirStream = fileio.opendirSync(path.toString());
   let dirent;
   const result = [];
 
@@ -49,7 +52,7 @@ function readdirSync(path, options) {
 
 /**
  * readFileSync
- * @param path
+ * @param {string|Buffer|integer}path
  * @param options
  * @returns {string | Buffer}
  */
@@ -59,7 +62,15 @@ function readFileSync(path, options) {
   }
   let Buffer = require('buffer').Buffer;
   const mode = options.flag || 'r';
-  let stream = fileio.createStreamSync(path, mode);
+  let stream;
+  if (Number.isInteger(path)) {
+    stream = fileio.fdopenStreamSync(path, mode);
+  } else {
+    if (!path || !path.toString || !path.toString()) {
+      throw 'Data input cannot be converted to string.';
+    }
+    stream = fileio.createStreamSync(path.toString(), mode);
+  }
 
   let data = [];
   let count = 0;
@@ -95,13 +106,35 @@ function readFileSync(path, options) {
 }
 
 /**
+ * exists
+ * @param {string|buffer}path
+ * @param {(boolean isExists)=>any}callback: isExists = true if the file exists, false otherwise
+ */
+function exists(path, callback) {
+  if (!path || !path.toString || !path.toString()) {
+    throw 'Data input cannot be converted to string.';
+  }
+  fileio.access(path.toString(), (err) => {
+    if (err) {
+      callback(false);
+      console.error(err);
+    } else {
+      callback(true);
+    }
+  });
+}
+
+/**
  * Returns true if the path exists, false otherwise.
- * @param {string} path
+ * @param {string|Buffer} path
  * @returns {boolean}
  */
 function existsSync(path) {
+  if (!path || !path.toString || !path.toString()) {
+    throw 'Data input cannot be converted to string.';
+  }
   try {
-    fileio.accessSync(path);
+    fileio.accessSync(path.toString());
     return true;
   } catch (e) {
     if (e.message == 'No such file or directory') {
@@ -111,10 +144,79 @@ function existsSync(path) {
   }
 }
 
+function statSync(path, options) {}
+/**
+ * write
+ * @param {integer}fd
+ * @param {string|buffer|Object}buffer
+ * @param {integer}offset
+ * @param {integer}length
+ * @param {integer}position
+ * @param {function}callback:
+ * @callback_param {Error}err
+ * @callback_param {integer}bytesWritten
+ * @callback_param {Buffer}buffer
+ */
+//Important Notice: If content is inserted behind any empty bytes(\0),
+//such content cannot be displayed because Openharmony cannot recognize '\0'
+function write(fd, buffer, offset, length, position, callback) {
+  var options = {};
+  //Another version of write is defined as:
+  //fs.write(fd, string[, position[,encoding]], callback)
+  if (typeof buffer == 'string') {
+    if (typeof offset == 'function') {
+      callback = offset; //'offset' corresponds to callback
+      options = {};
+    } else {
+      options['position'] = offset; //'offset' corresponds to position
+      if (typeof length == 'function') {
+        callback = length; //'length' corresponds to encoding
+      } else {
+        options['encoding'] = length;
+      }
+    }
+  } else {
+    if (!buffer || !buffer.toString || !buffer.toString()) {
+      throw 'Buffer input cannot be converted to string.';
+    }
+
+    if (typeof offset == 'function') {
+      callback = offset;
+      options = {};
+    } else {
+      options['offset'] = offset;
+      if (typeof length == 'function') {
+        callback = length;
+      } else {
+        options['length'] = length;
+        if (typeof position == 'function') {
+          callback = position;
+        } else {
+          options['position'] = position;
+        }
+      }
+    }
+  }
+
+  if (options.position) {
+    if (typeof options.position != 'number') {
+      delete options.position;
+    }
+  }
+  if (options.encoding) {
+    if (options.encoding != 'utf8') {
+      throw 'Only utf8 is supported to write!';
+    }
+  }
+  fileio.write(fd, buffer, options, (err, bytesWritten) => {
+    callback(err, bytesWritten, buffer);
+  });
+}
+
 /**
  * Write data to files
- * @param {string} file: path of the file
- * @param {string} data: content of data to write
+ * @param {string|buffer|integer} file: path of the file
+ * @param {string|Buffer|object} data: content of data to write
  * @param {string | Object } [options = { encoding : 'utf-8', flag: 'w', mode: 0o666}] - The optional options argument can
  * be a string specifying an encoding, or an object with an encoding property specifying the character encoding to use
  * for the data written(now only utf8 is supported), a flag property specifying the mode to open the file and
@@ -124,59 +226,82 @@ function writeFileSync(file, data, options) {
   if (!options) {
     options = {};
   }
-  if(!data.toString()){
-    throw('Data input cannot be converted to string.');
+  if (!data || !data.toString || !data.toString()) {
+    throw 'Data input cannot be converted to string.';
   }
   var coding;
   const flag = options.flag || 'w';
-  if (typeof options == 'string'){
+  if (typeof options == 'string') {
     coding = options;
-  }else{
+  } else {
     coding = options.encoding || 'utf8';
   }
   const mode = options.mode || 0o666;
 
-  if(coding != 'utf8'){
-    throw('Only utf8 is supported to write');
+  if (coding != 'utf8') {
+    throw 'Only utf8 is supported to write';
   }
 
   const flagDic = {
-    'a': 1089,
-    'ax': 1217,
+    a: 1089,
+    ax: 1217,
     'a+': 1090,
     'ax+': 1218,
-    'as': 1053761,
+    as: 1053761,
     'as+': 1053762,
-    'r': 0,
+    r: 0,
     'r+': 2,
     'rs+': 1052674,
-    'w': 577,
-    'wx': 705,
+    w: 577,
+    wx: 705,
     'w+': 578,
     'wx+': 706
   };
-  let fd = fileio.openSync(file, flagDic[flag], mode);
-
-  fileio.writeSync(fd,data.toString());
+  if (Number.isInteger(file)) {
+    try {
+      fileio.writeSync(file, data.toString());
+    } catch (err) {
+      console.error(err);
+      throw (
+        'Write File failed at ' + file + '! ' + err.name + ':' + err.message
+      );
+    }
+  } else {
+    if (!file || !file.toString || !file.toString()) {
+      throw 'Data input cannot be converted to string.';
+    }
+    try {
+      let fd = fileio.openSync(file.toString(), flagDic[flag], mode);
+      fileio.writeSync(fd, data.toString());
+    } catch (err) {
+      console.error(err);
+      throw (
+        'Write File failed at ' + file + '! ' + err.name + ':' + err.message
+      );
+    }
+  }
 }
-
 
 /**
  * Delete a file
  * @param {string | Buffer} path: The path of the file to delete
  */
 function unlinkSync(path) {
-    try{
-      let file = path.toString();
-      fileio.unlinkSync(file);
-    }
-    catch(e){
-      console.log("Error: " + e);
-      throw e;
-    }
+  if (!path || !path.toString || !path.toString()) {
+    throw 'Data input cannot be converted to string.';
+  }
+  try {
+    let file = path.toString();
+    fileio.unlinkSync(file);
+  } catch (e) {
+    console.error(e);
+    throw (
+      'Delete fail at ' + path.toString() + '! ' + e.name + ': ' + e.message
+    );
+  }
 }
 
-function createWriteStream(){}
+function createWriteStream() {}
 
 /**
  * readFile callback
@@ -219,7 +344,10 @@ function readFilePromises(path, options) {
     let Buffer = require('buffer').Buffer;
     const mode = options.flag || 'r';
 
-    fileio.createStream(path, mode, async function (err, stream) {
+    if (!path || !path.toString || !path.toString()) {
+      throw 'Data input cannot be converted to string.';
+    }
+    fileio.createStream(path.toString(), mode, async function (err, stream) {
       if (err) {
         reject(err);
         return;
@@ -273,7 +401,10 @@ function readFilePromises(path, options) {
 const harmonyFS = {
   readdirSync,
   readFileSync,
+  exists,
   existsSync,
+  statSync,
+  write,
   writeFileSync,
   unlinkSync,
   createWriteStream,
