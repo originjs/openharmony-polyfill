@@ -144,7 +144,192 @@ function existsSync(path) {
   }
 }
 
-function statSync(path, options) {}
+/**
+ * stat
+ * @param {string|Buffer}path
+ * @param {object}options
+ * @param {function}callback
+ */
+function stat(path, options, callback) {
+  if (typeof options == 'function') {
+    callback = options;
+  }
+  if (!options) {
+    options = {};
+  }
+
+  if (typeof callback == 'function') {
+    statPromises(path, options)
+      .then((stat) => callback(null, stat))
+      .catch((err) => callback(err, null));
+  } else {
+    return statPromises(path, options);
+  }
+}
+
+function statPromises(path, options) {
+  function _statP(resolve, reject) {
+    let _bigint = options.bigint || false;
+    if (!path || !path.toString || !path.toString()) {
+      throw 'Data input cannot be converted to string.';
+    }
+
+    fileio.stat(path.toString(), async function (err, _stat) {
+      if (err) {
+        reject(err);
+        return;
+      }
+
+      let stat = {};
+      let prop = [
+        '_napiwrapper',
+        'dev',
+        'ino',
+        'mode',
+        'nlink',
+        'uid',
+        'gid',
+        'rdev',
+        'size',
+        'blocks',
+        'atime',
+        'mtime',
+        'ctime',
+        'isBlockDevice',
+        'isCharacterDevice',
+        'isDirectory',
+        'isFIFO',
+        'isFile',
+        'isSocket',
+        'isSymbolicLink'
+      ];
+      let time_prop = ['atime', 'mtime', 'ctime'];
+
+      try {
+        for (let property of prop) {
+          stat[property] = _stat[property];
+        }
+        if (_bigint) {
+          for (let status of time_prop) {
+            if (stat[status]) {
+              stat[status + 'Ms'] = stat[status];
+              stat[status + 'Ns'] = stat[status] * 1000000;
+              stat[status] = new Date();
+              stat[status].setTime(stat[status + 'Ms']);
+              prop.push(status + 'Ms', status + 'Ns');
+            }
+          }
+          for (let property of prop) {
+            if (!isNaN(stat[property])) {
+              stat[property] = BigInt(stat[property]);
+            }
+          }
+        } else {
+          for (let status of time_prop) {
+            if (stat[status]) {
+              stat[status + 'Ms'] = stat[status];
+              stat[status] = new Date();
+              stat[status].setTime(stat[status + 'Ms']);
+            }
+          }
+        }
+      } catch (err) {
+        reject(err);
+        return;
+      }
+
+      Object.freeze(stat);
+      resolve(stat);
+    });
+  }
+  const Promises = require('promise');
+  return new Promises(_statP);
+}
+
+/**
+ * statSync
+ * @param {string|Buffer}path
+ * @param {object}options
+ * @return {Stat}
+ */
+function statSync(path, options) {
+  if (!options) {
+    options = {};
+  }
+  let _bigint = options.bigint || false;
+  let _throwIfNoEntry = options.throwIfNoEntry || true;
+  if (!path || !path.toString || !path.toString()) {
+    throw 'Data input cannot be converted to string.';
+  }
+  try {
+    fileio.accessSync(path.toString());
+  } catch (err) {
+    if (_throwIfNoEntry) {
+      console.error(err);
+      throw err;
+    } else {
+      return undefined;
+    }
+  }
+
+  let _stat = fileio.statSync(path.toString());
+  let stat = {};
+  let prop = [
+    '_napiwrapper',
+    'dev',
+    'ino',
+    'mode',
+    'nlink',
+    'uid',
+    'gid',
+    'rdev',
+    'size',
+    'blocks',
+    'atime',
+    'mtime',
+    'ctime',
+    'isBlockDevice',
+    'isCharacterDevice',
+    'isDirectory',
+    'isFIFO',
+    'isFile',
+    'isSocket',
+    'isSymbolicLink'
+  ];
+  let time_prop = ['atime', 'mtime', 'ctime'];
+
+  for (let property of prop) {
+    stat[property] = _stat[property];
+  }
+  if (_bigint) {
+    for (let status of time_prop) {
+      if (stat[status]) {
+        stat[status + 'Ms'] = stat[status];
+        stat[status + 'Ns'] = stat[status] * 1000000;
+        stat[status] = new Date();
+        stat[status].setTime(stat[status + 'Ms']);
+        prop.push(status + 'Ms', status + 'Ns');
+      }
+    }
+    for (let property of prop) {
+      if (!isNaN(stat[property])) {
+        stat[property] = BigInt(stat[property]);
+      }
+    }
+  } else {
+    for (let status of time_prop) {
+      if (stat[status]) {
+        stat[status + 'Ms'] = stat[status];
+        stat[status] = new Date();
+        stat[status].setTime(stat[status + 'Ms']);
+      }
+    }
+  }
+
+  Object.freeze(stat);
+  return stat;
+}
+
 /**
  * write
  * @param {integer}fd
@@ -403,6 +588,7 @@ const harmonyFS = {
   readFileSync,
   exists,
   existsSync,
+  stat,
   statSync,
   write,
   writeFileSync,
