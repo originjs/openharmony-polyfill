@@ -7,7 +7,7 @@ struct FSPage {
   @State text: string = '';
   @State readText: string = '';
   @State path: string = '';
-  @State status: string = '无';
+  @State status: string = 'Ready';
   @State appDir: string = '';
   @State protoFilePath: string = 'awesome.proto';
 
@@ -84,120 +84,119 @@ struct FSPage {
   build() {
     Flex({ direction: FlexDirection.Column, alignItems: ItemAlign.Start, justifyContent: FlexAlign.Center }) {
       // @ts-ignore
-      Text(`状态：${this.status}`).fontSize(16).fontWeight(FontWeight.Bolder)
-      Text('文件路径：').fontSize(16).fontWeight(FontWeight.Bolder)
+      Text(`Status：${this.status}`).fontSize(16).fontWeight(FontWeight.Bolder)
+      Text('File Path：').fontSize(16).fontWeight(FontWeight.Bolder)
       Text(this.path).fontSize(16).border({ width: 1, color: "red" }).width('100%')
-      Text('写入文件内容：').fontSize(16).fontWeight(FontWeight.Bolder)
+      Text('Data to write：').fontSize(16).fontWeight(FontWeight.Bolder)
       TextInput({ placeholder: "please...", text: this.text }).height(40).onChange((value: string) => {
         this.text = value;
       })
       Row() {
-        Button('从头写入').onClick(async () => {
+        Button('Write').onClick(async () => {
           let fs = this.getFs();
           let fd = fileio.openSync(this.path, 65, 0o666);
           fs.write(fd, this.text, (err, written, string) => {
             if (err) {
-              this.status = "写入失败";
+              this.status = "Write Fail!";
               console.error(err);
               throw ("Write failed at " + this.path + "!")
             }
-            this.status = "写入成功";
+            this.status = "Write Success!";
             console.info('File directory :' + this.path);
           });
         }).alignSelf(ItemAlign.Center)
-        Button('覆写文件').onClick(async () => {
+        Button('Overwrite').onClick(async () => {
           try {
             let fs = this.getFs();
             fs.writeFileSync(this.path, this.text);
             console.info('File directory :' + this.path);
-            this.status = "覆写成功";
+            this.status = "Overwrite Success!";
           } catch (err) {
-            this.status = "覆写失败";
+            this.status = "Overwrite Fail!";
             console.error(err);
           }
         }).alignSelf(ItemAlign.Center)
-        Button('加写文件').onClick(async () => {
+        Button('Add to end').onClick(async () => {
           try {
             let fs = this.getFs();
             fs.writeFileSync(this.path, this.text, { flag: 'a' });
             console.info('File directory :' + this.path);
-            this.status = "加写成功";
+            this.status = "Add success!";
           } catch (err) {
-            this.status = "加写失败";
+            this.status = "Add fail!";
             console.error(err);
           }
         }).alignSelf(ItemAlign.Center)
-        Button('删除文件').onClick(() => {
-          try {
-            let fs = this.getFs();
-            fs.unlinkSync(this.path);
-            this.status = "删除成功";
-          } catch (err) {
-            this.status = "删除失败";
-            console.error(err);
-          }
-
-        })
       }
       Row(){
-        Button('同步获取信息').onClick(() => {
+        Button('Get File Stat(sync)').onClick(() => {
           try {
             let fs = this.getFs();
             let status = fs.statSync(this.path);
-            this.status = "同步获取成功";
+            this.status = "Stat Success(sync)!";
             this.readText = "";
             for (let prop in status){
               if ((status[prop].toString)&&(status[prop].toString())&&(typeof(status[prop])!='function'))
               this.readText += prop + ': ' + status[prop].toString() + '\n';
             }
           } catch (err) {
-            this.status = "同步获取失败";
+            this.status = "Stat Fail(sync)!";
             console.error(err);
           }
         })
-        Button('异步获取信息').onClick(() => {
+        Button('Get File Stat(async)').onClick(() => {
           let fs = this.getFs();
           fs.stat(this.path)
-          .then((status)=>{
-            this.status = "异步获取成功";
-            this.readText = "";
-            for (let prop in status){
-              if ((status[prop].toString)&&(status[prop].toString())&&(typeof(status[prop])!='function'))
-              this.readText += prop + ': ' + status[prop].toString() + '\n';
-            }
-          })
-          .catch((err)=>{
-            this.status = "异步获取失败";
-            console.error(err);
-          })
+            .then((status)=>{
+              this.status = "Stat Success(async)!";
+              this.readText = "";
+              for (let prop in status){
+                if ((status[prop].toString)&&(status[prop].toString())&&(typeof(status[prop])!='function'))
+                this.readText += prop + ': ' + status[prop].toString() + '\n';
+              }
+            })
+            .catch((err)=>{
+              this.status = "Stat Success(async)!";
+              console.error(err);
+            })
         })
       }
-      Text('读入文件内容：').fontSize(16).fontWeight(FontWeight.Bolder)
+      Button('Delete file').onClick(() => {
+        try {
+          let fs = this.getFs();
+          fs.unlinkSync(this.path);
+          this.status = "Delete Success!";
+        } catch (err) {
+          this.status = "Delete Fail!";
+          console.error(err);
+        }
+      })
+      Text('Content:').fontSize(16).fontWeight(FontWeight.Bolder)
       Scroll(){
         Text(this.readText).fontSize(16)
           .textOverflow({overflow:TextOverflow.None})
           .border({ width: 1, color: "red" }).width('100%')
       }
-      Button('读文件').onClick(async () => {
+      Button('Read File').onClick(async () => {
         try {
           let fs = this.getFs();
           this.readText = fs.readFileSync(this.path, { encoding: 'utf8', flag: 'r' })
           //this.readText = fileio.readTextSync(this.path);
-          this.status = "读文件成功";
+          this.status = "Read file Success!";
         } catch (err) {
-          this.status = "读文件失败";
+          this.status = "Read file Fail!";
           console.error(err);
         }
       }).alignSelf(ItemAlign.Center)
-      Button('读目录').onClick(async () => {
+      Button('Read Dir').onClick(async () => {
         try {
           let fs = this.getFs();
           const result1 = fs.readdirSync(this.appDir, { withFileTypes: true });
           console.log(JSON.stringify(result1));
           this.readText = `${JSON.stringify(result1)}`;
-          this.status = "读目录成功";
+          this.status = "Read dir Success!";
         } catch (err) {
-          this.status = "读文件失败";
+          this.status = "Read dir Fail!";
           console.error(err);
         }
 

@@ -13,6 +13,7 @@
 
 Node.js API 兼容：
 * ⚠️ [File System](https://nodejs.org/docs/latest-v16.x/api/fs.html#file-system)
+* - [支持的api](doc/fs_supApi.md)
 
 | 图例 | 描述 |
 | ---- | ---- |
