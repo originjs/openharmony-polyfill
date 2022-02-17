@@ -13,6 +13,7 @@ This project is a polyfill that implements a subset of the standard web interfac
 
 Node.js API includes：
 * ⚠️ [File System](https://nodejs.org/docs/latest-v16.x/api/fs.html#file-system)
+* - [Supported Api](doc/fs_supApi.md)
 
 | Icon | Description |
 | ---- | ---- |
