@@ -2,7 +2,6 @@ import webSocket from '@ohos.net.webSocket';
 import { EventTarget } from './lib/EventTarget';
 
 const BINARY_TYPE = { blob: 'blob', arraybuffer: 'arraybuffer' };
-const READY_STATE = { CONNECTING: 0, OPEN: 1, CLOSING: 2, CLOSED: 3 };
 const createWS = Symbol('createWS');
 const connect = Symbol('connect');
 const openHandler = Symbol('openHandler');
@@ -18,6 +17,19 @@ const harmonyWS = WebSocket;
  *
  */
 class _WebSocket extends EventTarget {
+  static get CONNECTING() {
+    return 0;
+  }
+  static get OPEN() {
+    return 1;
+  }
+  static get CLOSING() {
+    return 2;
+  }
+  static get CLOSED() {
+    return 3;
+  }
+
   #url = '';
   #protocols = [''];
   #binaryType = BINARY_TYPE.blob;
@@ -57,12 +69,16 @@ class _WebSocket extends EventTarget {
   }
 
   [connect](header) {
-    this.#readyState = READY_STATE.CONNECTING;
+    this.#readyState = _WebSocket.CONNECTING;
     this.#ws.connect(this.#url, header, (err, value) => {
       if (!err) {
-        this.#readyState = READY_STATE.OPEN;
+        this.#readyState = _WebSocket.OPEN;
+        this.dispatchEvent({ type: 'open' });
+        if (this.onopen) {
+          this.onopen({ type: 'open', data: value });
+        }
       } else {
-        this.#readyState = READY_STATE.CLOSING;
+        this.#readyState = _WebSocket.CLOSING;
         console.error(value);
       }
     });
@@ -71,13 +87,13 @@ class _WebSocket extends EventTarget {
   [openHandler]() {
     this.#ws.on('open', (err, value) => {
       if (err) {
-        this.#readyState = READY_STATE.CONNECTING;
+        this.#readyState = _WebSocket.CONNECTING;
         console.error(value);
         return;
       }
-      this.#readyState = READY_STATE.OPEN;
+      this.#readyState = _WebSocket.OPEN;
+      this.dispatchEvent({ type: 'open' });
       if (this.onopen) {
-        this.dispatchEvent({ type: 'open' });
         this.onopen({ type: 'open', data: value });
       }
     });
@@ -86,12 +102,12 @@ class _WebSocket extends EventTarget {
   [messageHandler]() {
     this.#ws.on('message', (err, value) => {
       if (err) {
-        this.#readyState = READY_STATE.CONNECTING;
+        this.#readyState = _WebSocket.CONNECTING;
         console.error(value);
         return;
       }
+      this.dispatchEvent({ type: 'message' });
       if (this.onmessage) {
-        this.dispatchEvent({ type: 'message' });
         this.onmessage({ type: 'message', data: value });
       }
     });
@@ -102,9 +118,9 @@ class _WebSocket extends EventTarget {
       if (err) {
         console.error(value);
       }
-      this.#readyState = READY_STATE.CLOSED;
+      this.#readyState = _WebSocket.CLOSED;
+      this.dispatchEvent({ type: 'close' });
       if (this.onclose) {
-        this.dispatchEvent({ type: 'close' });
         this.onclose({ type: 'close', data: value });
       }
     });
@@ -113,8 +129,8 @@ class _WebSocket extends EventTarget {
   [errorHandler]() {
     this.#ws.on('error', (err) => {
       console.error(err);
+      this.dispatchEvent({ type: 'error' });
       if (this.onerror) {
-        this.dispatchEvent({ type: 'error' });
         this.error({ type: 'error', data: err });
       }
     });
@@ -125,7 +141,7 @@ class _WebSocket extends EventTarget {
       if (err) {
         console.error(`close error:${value}`);
       }
-      this.#readyState = READY_STATE.CLOSED;
+      this.#readyState = _WebSocket.CLOSED;
     });
     return true;
   }
