@@ -16,7 +16,11 @@ module.exports = class OpenharmonyPolyfillPlugin {
 			Buffer: [require.resolve("buffer/"), "Buffer"],
 			process: require.resolve("process/browser"),
 			fetch: ['openharmony-polyfill/web/fetch', 'fetch'],
-			XMLHttpRequest: ['openharmony-polyfill/web/xhr', 'XMLHttpRequest']
+			XMLHttpRequest: ['openharmony-polyfill/web/xhr', 'XMLHttpRequest'],
+			TextDecoder: ['openharmony-polyfill/web/encoding', 'TextDecoder'],
+			TextEncoder: ['openharmony-polyfill/web/encoding', 'TextEncoder'],
+			URL: ['openharmony-polyfill/web/url', 'URL'],
+			URLSearchParams: ['openharmony-polyfill/web/url', 'URLSearchParams'],
 		}, this.options.excludeAliases)));
 
 		compiler.options.resolve.fallback = {

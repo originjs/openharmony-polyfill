@@ -87,7 +87,3 @@ export class Crypto {
     return String.fromCharCode.apply(null, uuid);
   }
 }
-
-if (!globalThis.crypto) {
-  globalThis.crypto = new Crypto();
-}

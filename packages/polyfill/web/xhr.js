@@ -1,7 +1,7 @@
 import http from '@ohos.net.http';
 import { parse } from 'json5';
-import { EventTarget } from './lib/EventTarget';
-import { StatusMap } from './lib/StatusMap';
+import { EventTarget } from '../lib/eventTarget';
+import { StatusMap } from '../lib/statusMap';
 
 /**
  * The ProgressEvent interface represents events measuring progress of an underlying process, like an HTTP request
@@ -191,13 +191,15 @@ export class XMLHttpRequest extends EventTarget {
         //TODO: the headers returned by OpenHarmony has a null key, we can use JSON.parse() if this bug is fixed.
         const parsed = parse(data.header);
         this.#responseHeaders = {};
-        Object.getOwnPropertyNames(parsed).forEach(function (name) {
-          let value = parsed[name];
-          if (typeof value !== 'string') {
-            value = String(value);
-          }
-          this.#responseHeaders[name.toLowerCase()] = value;
-        }, this);
+        if (parse) {
+          Object.getOwnPropertyNames(parsed).forEach(function (name) {
+            let value = parsed[name];
+            if (typeof value !== 'string') {
+              value = String(value);
+            }
+            this.#responseHeaders[name.toLowerCase()] = value;
+          }, this);
+        }
         // overrides the MIME type returned by the server.
         if (this.#overrideMimeType) {
           this.#responseHeaders['content-type'] = this.#overrideMimeType;
@@ -310,7 +312,7 @@ export class XMLHttpRequest extends EventTarget {
   }
 
   // axios will check if onloadend exists, so we define an empty function
-  onloadend(e) {}
+  onloadend(e) { }
 
   _changeReadyState(state) {
     this.#readyState = state;
@@ -318,11 +320,4 @@ export class XMLHttpRequest extends EventTarget {
       this.onreadystatechange();
     }
   }
-}
-
-if (!globalThis.XMLHttpRequest) {
-  globalThis.XMLHttpRequest = XMLHttpRequest;
-  globalThis.navigator = {
-    product: 'NS'
-  };
 }

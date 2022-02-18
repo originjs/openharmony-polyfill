@@ -1,12 +1,8 @@
 import util from '@ohos.util';
-
 /**
  * since: API 7
  */
-if (util?.TextDecoder && !globalThis.TextDecoder) {
-  globalThis.TextDecoder = util.TextDecoder;
-}
+const TextDecoder = util.TextDecoder;
+const TextEncoder = util.TextEncoder;
+export { TextDecoder, TextEncoder };
 
-if (util?.TextEncoder && !globalThis.TextEncoder) {
-  globalThis.TextEncoder = util.TextEncoder;
-}

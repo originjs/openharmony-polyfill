@@ -1,6 +1,6 @@
 import http from '@ohos.net.http';
 import { parse } from 'json5';
-import { StatusMap } from './lib/StatusMap';
+import { StatusMap } from '../lib/statusMap';
 
 const DEFAULT_REFERRER_POLICY = 'strict-origin-when-cross-origin';
 function normalizeName(name) {
@@ -40,7 +40,7 @@ function iteratorFor(items) {
  * The Headers interface of the Fetch API allows you to perform various actions on HTTP request and response headers.
  * These actions include retrieving, setting, adding to, and removing headers from the list of the request's headers.
  */
-class Headers {
+export class Headers {
   #map = {};
 
   /**
@@ -59,9 +59,11 @@ class Headers {
     } else if (typeof init === 'string') {
       //TODO: the headers returned by OpenHarmony has a null key, we can use JSON.parse() if this bug is fixed.
       const parsed = parse(init);
-      Object.getOwnPropertyNames(parsed).forEach(function (name) {
-        this.append(name, parsed[name]);
-      }, this);
+      if (parsed) {
+        Object.getOwnPropertyNames(parsed).forEach(function (name) {
+          this.append(name, parsed[name]);
+        }, this);
+      }
     } else if (init) {
       Object.getOwnPropertyNames(init).forEach(function (name) {
         this.append(name, init[name]);
@@ -238,7 +240,7 @@ class ReadableStreamDefaultReader {
  * Body class provides common methods for Request and Response
  * @see https://fetch.spec.whatwg.org/#body
  */
-class Body {
+ export class Body {
   #body;
   #bodyUsed = false;
   _bodyType;
@@ -351,7 +353,7 @@ class Body {
 /**
  * The Request interface of the Fetch API represents a resource request.
  */
-class Request extends Body {
+ export class Request extends Body {
   cache = 'default';
 
   #url;
@@ -469,7 +471,7 @@ class Request extends Body {
 /**
  * The Response interface of the Fetch API represents the response to a request.
  */
-class Response extends Body {
+ export class Response extends Body {
   #type;
   #status;
   #ok;
@@ -647,19 +649,4 @@ export function fetch(resource, init) {
       }
     });
   });
-}
-
-fetch.polyfill = true;
-
-if (!globalThis.fetch) {
-  globalThis.fetch = fetch;
-  globalThis.Headers = Headers;
-  globalThis.Request = Request;
-  globalThis.Response = Response;
-  // We have a `fetch` object in `script` scope, replace it
-  if (!globalThis.original) {
-    globalThis.original = {};
-  }
-  globalThis.original.fetch = fetch;
-  fetch = _fetch;
 }

@@ -19,44 +19,41 @@ export class Storage {
 /**
  * since: API 6
  */
-class LocalStoragePolyfill extends Storage {
+export class LocalStorage extends Storage {
   static #storage;
   static #initialized = false;
 
   static async init() {
-    if (!LocalStoragePolyfill.#initialized) {
+    if (!LocalStorage.#initialized) {
       const context = featureAbility.getContext();
       const path = await context.getFilesDir();
-      if (!LocalStoragePolyfill.#initialized) {
-        LocalStoragePolyfill.#storage = dataStorage.getStorageSync(
+      if (!LocalStorage.#initialized) {
+        LocalStorage.#storage = dataStorage.getStorageSync(
           `${path}/localStorage`
         );
-        LocalStoragePolyfill.#initialized = true;
+        LocalStorage.#initialized = true;
       }
     }
   }
 
   static clear() {
-    LocalStoragePolyfill.#storage.clearSync();
-    LocalStoragePolyfill.#storage.flushSync();
+    LocalStorage.#storage.clearSync();
+    LocalStorage.#storage.flushSync();
   }
 
   static getItem(key) {
-    return LocalStoragePolyfill.#storage.hasSync(key)
-      ? LocalStoragePolyfill.#storage.getSync(key, '\0')
+    return LocalStorage.#storage.hasSync(key)
+      ? LocalStorage.#storage.getSync(key, '\0')
       : null;
   }
 
   static removeItem(key) {
-    LocalStoragePolyfill.#storage.deleteSync(key);
-    LocalStoragePolyfill.#storage.flushSync();
+    LocalStorage.#storage.deleteSync(key);
+    LocalStorage.#storage.flushSync();
   }
 
   static setItem(key, value) {
-    LocalStoragePolyfill.#storage.putSync(key, value);
-    LocalStoragePolyfill.#storage.flushSync();
+    LocalStorage.#storage.putSync(key, value);
+    LocalStorage.#storage.flushSync();
   }
 }
-
-LocalStoragePolyfill.init();
-globalThis.localStorage = globalThis.localStorage ?? LocalStoragePolyfill;
