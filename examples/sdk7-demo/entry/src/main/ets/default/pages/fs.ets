@@ -116,6 +116,16 @@ struct FSPage {
             console.error(err);
           }
         }).alignSelf(ItemAlign.Center)
+        Button('OverwriteAsync').onClick(async () => {
+          let fs = this.getFs();
+          fs.writeFile(this.path, this.text, (err) => {
+            if (!err) {
+              this.status = "Overwrite Success!";
+            } else {
+              this.status = "Overwrite Fail!";
+            }
+          });
+        }).alignSelf(ItemAlign.Center)
         Button('Add to end').onClick(async () => {
           try {
             let fs = this.getFs();
@@ -128,15 +138,16 @@ struct FSPage {
           }
         }).alignSelf(ItemAlign.Center)
       }
-      Row(){
+
+      Row() {
         Button('Get File Stat(sync)').onClick(() => {
           try {
             let fs = this.getFs();
             let status = fs.statSync(this.path);
             this.status = "Stat Success(sync)!";
             this.readText = "";
-            for (let prop in status){
-              if ((status[prop].toString)&&(status[prop].toString())&&(typeof(status[prop])!='function'))
+            for (let prop in status) {
+              if ((status[prop].toString) && (status[prop].toString()) && (typeof (status[prop]) != 'function'))
               this.readText += prop + ': ' + status[prop].toString() + '\n';
             }
           } catch (err) {
@@ -147,20 +158,21 @@ struct FSPage {
         Button('Get File Stat(async)').onClick(() => {
           let fs = this.getFs();
           fs.stat(this.path)
-            .then((status)=>{
+            .then((status) => {
               this.status = "Stat Success(async)!";
               this.readText = "";
-              for (let prop in status){
-                if ((status[prop].toString)&&(status[prop].toString())&&(typeof(status[prop])!='function'))
+              for (let prop in status) {
+                if ((status[prop].toString) && (status[prop].toString()) && (typeof (status[prop]) != 'function'))
                 this.readText += prop + ': ' + status[prop].toString() + '\n';
               }
             })
-            .catch((err)=>{
+            .catch((err) => {
               this.status = "Stat Success(async)!";
               console.error(err);
             })
         })
       }
+
       Button('Delete file').onClick(() => {
         try {
           let fs = this.getFs();
@@ -172,11 +184,12 @@ struct FSPage {
         }
       })
       Text('Content:').fontSize(16).fontWeight(FontWeight.Bolder)
-      Scroll(){
+      Scroll() {
         Text(this.readText).fontSize(16)
-          .textOverflow({overflow:TextOverflow.None})
+          .textOverflow({ overflow: TextOverflow.None })
           .border({ width: 1, color: "red" }).width('100%')
       }
+
       Button('Read File').onClick(async () => {
         try {
           let fs = this.getFs();
