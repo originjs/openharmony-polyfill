@@ -1,5 +1,5 @@
 import http from '@ohos.net.http';
-import * as JSON5 from 'json5';
+import { parse } from 'json5';
 import { EventTarget } from './lib/EventTarget';
 import { StatusMap } from './lib/StatusMap';
 
@@ -63,7 +63,7 @@ class ProgressEvent {
  * without disrupting what the user is doing.
  * @see https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest
  */
-class XMLHttpRequest extends EventTarget {
+export class XMLHttpRequest extends EventTarget {
   static get UNSENT() {
     return 0;
   }
@@ -189,7 +189,7 @@ class XMLHttpRequest extends EventTarget {
       if (!err) {
         this._changeReadyState(XMLHttpRequest.HEADERS_RECEIVED);
         //TODO: the headers returned by OpenHarmony has a null key, we can use JSON.parse() if this bug is fixed.
-        const parsed = JSON5.parse(data.header);
+        const parsed = parse(data.header);
         this.#responseHeaders = {};
         Object.getOwnPropertyNames(parsed).forEach(function (name) {
           let value = parsed[name];

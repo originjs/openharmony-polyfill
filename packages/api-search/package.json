@@ -1,5 +1,5 @@
 {
-  "name": "openharmony-polyfill",
+  "name": "@originjs/api-search",
   "version": "0.5.0",
   "main": "src/index.js",
   "types": "index.d.ts",
@@ -17,8 +17,5 @@
   "author": "originjs.org",
   "license": "MulanPSL-2.0",
   "dependencies": {
-    "buffer": "^6.0.3",
-    "json5": "^2.2.0",
-    "promise": "^8.1.0"
   }
 }

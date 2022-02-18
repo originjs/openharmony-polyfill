@@ -1,6 +1,20 @@
 import dataStorage from '@ohos.data.storage';
 import featureAbility from '@ohos.ability.featureAbility';
-import { Storage } from './lib/Storage';
+
+
+export class Storage {
+  static key(n) {}
+
+  static length() {}
+
+  static getItem(key) {}
+
+  static setItem(key, val) {}
+
+  static removeItem(key) {}
+
+  static clear() {}
+}
 
 /**
  * since: API 6

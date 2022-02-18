@@ -6,3 +6,7 @@ import util from '@ohos.util';
 if (util?.TextDecoder && !globalThis.TextDecoder) {
   globalThis.TextDecoder = util.TextDecoder;
 }
+
+if (util?.TextEncoder && !globalThis.TextEncoder) {
+  globalThis.TextEncoder = util.TextEncoder;
+}

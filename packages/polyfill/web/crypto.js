@@ -2,7 +2,7 @@
  * The Crypto interface represents basic cryptography features available in the current context. It allows
  * access to a cryptographically strong random number generator and to cryptographic primitives.
  */
-class Crypto {
+export class Crypto {
   /**
    * Fills the passed TypedArray with cryptographically sound random values.
    * @param {*} typedArray

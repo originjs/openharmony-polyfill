@@ -1,4 +1,4 @@
-import harmonyFS from './FileSystemPolyfill';
+import harmonyFS from './fs';
 
 if (!globalThis.fs) {
   globalThis.harmonyFS = harmonyFS;

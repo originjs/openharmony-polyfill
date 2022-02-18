@@ -1,5 +1,5 @@
 import http from '@ohos.net.http';
-import * as JSON5 from 'json5';
+import { parse } from 'json5';
 import { StatusMap } from './lib/StatusMap';
 
 const DEFAULT_REFERRER_POLICY = 'strict-origin-when-cross-origin';
@@ -58,7 +58,7 @@ class Headers {
       }, this);
     } else if (typeof init === 'string') {
       //TODO: the headers returned by OpenHarmony has a null key, we can use JSON.parse() if this bug is fixed.
-      const parsed = JSON5.parse(init);
+      const parsed = parse(init);
       Object.getOwnPropertyNames(parsed).forEach(function (name) {
         this.append(name, parsed[name]);
       }, this);
@@ -375,8 +375,8 @@ class Request extends Body {
     const inputBody = init.body
       ? init.body
       : input instanceof Request
-      ? input._body
-      : null;
+        ? input._body
+        : null;
     if ((method === 'GET' || method === 'HEAD') && inputBody) {
       throw new TypeError('Body not allowed for GET or HEAD requests');
     }
@@ -623,7 +623,7 @@ function getHarmonyRequestOptions(request) {
  *    An object containing any custom settings that you want to apply to the request.
  * @returns
  */
-function _fetch(resource, init) {
+export function fetch(resource, init) {
   return new Promise(function (resolve, reject) {
     const request = new Request(resource, init);
     if (request.signal && request.signal.aborted) {
@@ -649,10 +649,10 @@ function _fetch(resource, init) {
   });
 }
 
-_fetch.polyfill = true;
+fetch.polyfill = true;
 
 if (!globalThis.fetch) {
-  globalThis.fetch = _fetch;
+  globalThis.fetch = fetch;
   globalThis.Headers = Headers;
   globalThis.Request = Request;
   globalThis.Response = Response;
