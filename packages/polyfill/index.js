@@ -50,9 +50,9 @@ if (!globalThis.fetch) {
 /**
  * polyfill for Crypto
  */
-import { Crypto } from './web/crypto';
+import { crypto } from './web/crypto';
 if (!globalThis.crypto) {
-    globalThis.crypto = new Crypto();
+    globalThis.crypto = crypto;
 }
 
 /**

@@ -15,6 +15,7 @@ module.exports = class OpenharmonyPolyfillPlugin {
 		compiler.options.plugins.push(new ProvidePlugin(excludeObjectKeys({
 			Buffer: [require.resolve("buffer/"), "Buffer"],
 			process: require.resolve("process/browser"),
+			crypto: ['openharmony-polyfill/web/crypto', 'crypto'],
 			fetch: ['openharmony-polyfill/web/fetch', 'fetch'],
 			XMLHttpRequest: ['openharmony-polyfill/web/xhr', 'XMLHttpRequest'],
 			TextDecoder: ['openharmony-polyfill/web/encoding', 'TextDecoder'],

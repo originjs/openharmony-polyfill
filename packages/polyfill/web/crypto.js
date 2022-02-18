@@ -2,7 +2,7 @@
  * The Crypto interface represents basic cryptography features available in the current context. It allows
  * access to a cryptographically strong random number generator and to cryptographic primitives.
  */
-export class Crypto {
+class Crypto {
   /**
    * Fills the passed TypedArray with cryptographically sound random values.
    * @param {*} typedArray
@@ -87,3 +87,5 @@ export class Crypto {
     return String.fromCharCode.apply(null, uuid);
   }
 }
+
+export const crypto = new Crypto();
