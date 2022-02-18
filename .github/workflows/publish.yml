@@ -16,11 +16,11 @@ jobs:
           node-version: '14'
           registry-url: 'https://registry.npmjs.org'
       - name: Install dependencies
-        run: npm install
+        run: pnpm install
       - name: Build
-        run: npm run lint
+        run: pnpm run lint
       - name: Test
-        run: npm run test
+        run: pnpm run test
 
       - name: Create Release for Tag
         id: release_tag
