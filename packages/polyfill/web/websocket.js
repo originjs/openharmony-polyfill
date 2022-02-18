@@ -1,5 +1,5 @@
 import webSocket from '@ohos.net.webSocket';
-import { EventTarget } from './lib/EventTarget';
+import { EventTarget } from '../lib/eventTarget';
 
 const BINARY_TYPE = { blob: 'blob', arraybuffer: 'arraybuffer' };
 const createWS = Symbol('createWS');
@@ -8,7 +8,7 @@ const openHandler = Symbol('openHandler');
 const messageHandler = Symbol('messageHandler');
 const closeHandler = Symbol('closeHandler');
 const errorHandler = Symbol('errorHandler');
-const harmonyWS = WebSocket;
+const openharmonyWebSocket = WebSocket;
 
 /**
  * The WebSocket object provides the API for creating and managing a WebSocket connection to a server,
@@ -63,7 +63,8 @@ class _WebSocket extends EventTarget {
   }
 
   [createWS]() {
-    WebSocket = harmonyWS;
+    // createWebSocket() needs an Openharmony WebSocket class
+    WebSocket = openharmonyWebSocket;
     this.#ws = webSocket.createWebSocket();
     WebSocket = _WebSocket;
   }
@@ -218,7 +219,4 @@ class _WebSocket extends EventTarget {
   }
 }
 
-if (!globalThis.WebSocket) {
-  globalThis.WebSocket = _WebSocket;
-  WebSocket = _WebSocket;
-}
+export { _WebSocket as WebSocket };
