@@ -1,4 +1,4 @@
-//import 'openharmony-polyfill'
+import 'openharmony-polyfill'
 import router from '@system.router';
 
 class PageData {

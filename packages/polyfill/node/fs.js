@@ -242,6 +242,7 @@ function statPromises(path, options) {
       resolve(stat);
     });
   }
+
   const Promises = require('promise');
   return new Promises(_statP);
 }
@@ -408,40 +409,7 @@ function write(fd, buffer, offset, length, position, callback) {
  * a mode property specifying the permission of the file if being created.
  */
 function writeFileSync(file, data, options) {
-  if (!options) {
-    options = {};
-  }
-  if (!data || !data.toString || !data.toString()) {
-    throw 'Data input cannot be converted to string.';
-  }
-  var coding;
-  const flag = options.flag || 'w';
-  if (typeof options == 'string') {
-    coding = options;
-  } else {
-    coding = options.encoding || 'utf8';
-  }
-  const mode = options.mode || 0o666;
-
-  if (coding != 'utf8') {
-    throw 'Only utf8 is supported to write';
-  }
-
-  const flagDic = {
-    a: 1089,
-    ax: 1217,
-    'a+': 1090,
-    'ax+': 1218,
-    as: 1053761,
-    'as+': 1053762,
-    r: 0,
-    'r+': 2,
-    'rs+': 1052674,
-    w: 577,
-    wx: 705,
-    'w+': 578,
-    'wx+': 706
-  };
+  const { flag, mode, flagDic } = writeFileParamFormat(file, data, options);
   if (Number.isInteger(file)) {
     try {
       fileio.writeSync(file, data.toString());
@@ -464,6 +432,70 @@ function writeFileSync(file, data, options) {
         'Write File failed at ' + file + '! ' + err.name + ':' + err.message
       );
     }
+  }
+}
+
+function writeFileParamFormat(file, data, options = {}, callback) {
+  if (typeof options === 'function') {
+    callback = options;
+    options = {};
+  }
+  if (!data || !data.toString || !data.toString()) {
+    throw 'Data input cannot be converted to string.';
+  }
+  let coding;
+  const flag = options.flag || 'w';
+  if (typeof options == 'string') {
+    coding = options;
+  } else {
+    coding = options.encoding || 'utf8';
+  }
+  const mode = options.mode || 0o666;
+
+  if (coding !== 'utf8') {
+    throw 'Only utf8 is supported to write';
+  }
+
+  const flagDic = {
+    a: 1089,
+    ax: 1217,
+    'a+': 1090,
+    'ax+': 1218,
+    as: 1053761,
+    'as+': 1053762,
+    r: 0,
+    'r+': 2,
+    'rs+': 1052674,
+    w: 577,
+    wx: 705,
+    'w+': 578,
+    'wx+': 706
+  };
+  return { flag: flag, mode: mode, callback: callback, flagDic: flagDic };
+}
+
+function writeFile(file, data, options, callback) {
+  const {
+    flag,
+    mode,
+    flagDic,
+    callback: fn
+  } = writeFileParamFormat(file, data, options, callback);
+  if (Number.isInteger(file)) {
+    fileio
+      .write(file, data.toString())
+      .then(() => fn())
+      .catch((err) => fn(err));
+  } else {
+    if (!file || !file.toString || !file.toString()) {
+      throw 'Data input cannot be converted to string.';
+    }
+    new Promise((resolve) =>
+      resolve(fileio.openSync(file.toString(), flagDic[flag], mode))
+    )
+      .then((fd) => fileio.write(fd, data.toString()))
+      .then(() => fn())
+      .catch((err) => fn(err));
   }
 }
 
@@ -695,6 +727,7 @@ const harmonyFS = {
   statSync,
   write,
   writeFileSync,
+  writeFile,
   unlinkSync,
   createWriteStream,
   readFile
