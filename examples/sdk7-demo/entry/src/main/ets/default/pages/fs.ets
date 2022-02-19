@@ -105,7 +105,7 @@ struct FSPage {
             console.info('File directory :' + this.path);
           });
         }).alignSelf(ItemAlign.Center)
-        Button('Overwrite').onClick(async () => {
+        Button('Overwrite').onClick(() => {
           try {
             let fs = this.getFs();
             fs.writeFileSync(this.path, this.text);
@@ -125,6 +125,15 @@ struct FSPage {
               this.status = "Overwrite Fail!";
             }
           });
+        }).alignSelf(ItemAlign.Center)
+        Button('appendWriteSync').onClick(() => {
+          try{
+            let fs = this.getFs();
+            this.status = "Overwrite Success!";
+            fs.appendFileSync(this.path, this.text)
+          }catch (e){
+            this.status = "Overwrite Fail!";
+          }
         }).alignSelf(ItemAlign.Center)
         Button('Add to end').onClick(async () => {
           try {
