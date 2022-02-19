@@ -399,6 +399,22 @@ function write(fd, buffer, offset, length, position, callback) {
   });
 }
 
+const flagDic = {
+  a: 0o1 | 0o100 | 0o2000,
+  ax: 1217,
+  'a+': 1090,
+  'ax+': 1218,
+  as: 1053761,
+  'as+': 1053762,
+  r: 0,
+  'r+': 2,
+  'rs+': 1052674,
+  w: 577,
+  wx: 705,
+  'w+': 578,
+  'wx+': 706
+};
+
 /**
  * Write data to files
  * @param {string|buffer|integer} file: path of the file
@@ -409,7 +425,9 @@ function write(fd, buffer, offset, length, position, callback) {
  * a mode property specifying the permission of the file if being created.
  */
 function writeFileSync(file, data, options) {
-  const { flag, mode, flagDic } = writeFileParamFormat(file, data, options);
+  const { options: op } = writeFileParamFormat(file, data, options);
+  const flag = op.flag || 'w';
+  const mode = op.mode || 0o666;
   if (Number.isInteger(file)) {
     try {
       fileio.writeSync(file, data.toString());
@@ -435,6 +453,18 @@ function writeFileSync(file, data, options) {
   }
 }
 
+function appendFileSync(file, data, options = {}) {
+  const { options: op } = writeFileParamFormat(file, data, options);
+  const flag = op.flag || 'a';
+  const mode = op.mode || 0o666;
+  if (Number.isInteger(file)) {
+    fileio.writeSync(file, data.toString());
+  } else {
+    let fd = fileio.openSync(file.toString(), flagDic[flag], mode);
+    fileio.writeSync(fd, data.toString());
+  }
+}
+
 function writeFileParamFormat(file, data, options = {}, callback) {
   if (typeof options === 'function') {
     callback = options;
@@ -444,43 +474,26 @@ function writeFileParamFormat(file, data, options = {}, callback) {
     throw 'Data input cannot be converted to string.';
   }
   let coding;
-  const flag = options.flag || 'w';
   if (typeof options == 'string') {
     coding = options;
   } else {
     coding = options.encoding || 'utf8';
   }
-  const mode = options.mode || 0o666;
-
   if (coding !== 'utf8') {
     throw 'Only utf8 is supported to write';
   }
-
-  const flagDic = {
-    a: 1089,
-    ax: 1217,
-    'a+': 1090,
-    'ax+': 1218,
-    as: 1053761,
-    'as+': 1053762,
-    r: 0,
-    'r+': 2,
-    'rs+': 1052674,
-    w: 577,
-    wx: 705,
-    'w+': 578,
-    'wx+': 706
-  };
-  return { flag: flag, mode: mode, callback: callback, flagDic: flagDic };
+  return { options: options, callback: callback };
 }
 
 function writeFile(file, data, options, callback) {
-  const {
-    flag,
-    mode,
-    flagDic,
-    callback: fn
-  } = writeFileParamFormat(file, data, options, callback);
+  const { options: op, callback: fn } = writeFileParamFormat(
+    file,
+    data,
+    options,
+    callback
+  );
+  const flag = op.flag || 'w';
+  const mode = op.mode || 0o666;
   if (Number.isInteger(file)) {
     fileio
       .write(file, data.toString())
@@ -730,7 +743,8 @@ const harmonyFS = {
   writeFile,
   unlinkSync,
   createWriteStream,
-  readFile
+  readFile,
+  appendFileSync
 };
 
 export default harmonyFS;
