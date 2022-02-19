@@ -755,6 +755,17 @@ function dirname(path) {
   return path.slice(0, end);
 }
 
+function closeSync(fd) {
+  fileio.closeSync(fd);
+}
+
+function close(fd, callback = () => {}) {
+  fileio
+    .close(fd)
+    .then(() => callback())
+    .catch((err) => callback(err));
+}
+
 const harmonyFS = {
   mkdirSync,
   mkdir,
@@ -771,7 +782,9 @@ const harmonyFS = {
   createWriteStream,
   readFile,
   appendFileSync,
-  appendFile
+  appendFile,
+  close,
+  closeSync
 };
 
 export default harmonyFS;
