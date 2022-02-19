@@ -2,7 +2,6 @@
   "private": true,
   "version": "0.5.0",
   "scripts": {
-    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s --commit-path .",
     "format": "prettier -w .",
     "lint": "eslint packages/**/*.js",
     "lint:fix": "eslint packages/** --fix",

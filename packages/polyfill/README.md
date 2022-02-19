@@ -6,14 +6,14 @@ This project is a polyfill that implements a subset of the standard web interfac
 * ✅ [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)
 * ✅ [TextDecoder](https://developer.mozilla.org/en-US/docs/Web/API/TextDecoder)
 * ✅ [TextEncoder](https://developer.mozilla.org/en-US/docs/Web/API/TextEncoder)
-* ⚠️ [URL API](doc/url.md)
+* ⚠️ [URL API](https://developer.mozilla.org/en-US/docs/Web/API/URL_API)
 * ⚠️ [Web Crypto API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API)
 * ⚠️ [Web Storage API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API)
 * ❌ [Web Workers API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)
 
 Node.js API includes：
 * ⚠️ [File System](https://nodejs.org/docs/latest-v16.x/api/fs.html#file-system)
-  * [Supported Api](doc/fs_supApi.md)
+  * [Supported Api](docs/fs_supApi.md)
 
 | Icon | Description |
 | ---- | ---- |

@@ -1,12 +1,15 @@
 {
   "name": "@originjs/openharmony-webpack-plugin",
-  "version": "0.5.0",
+  "version": "0.1.0",
   "main": "index.js",
   "files": [
     "index.js"
   ],
   "engines": {
     "node": ">=12.0.0"
+  },
+  "scripts": {
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s --commit-path . --lerna-package openharmony-webpack-plugin"
   },
   "dependencies": {
     "@types/webpack": "^5.28.0",
