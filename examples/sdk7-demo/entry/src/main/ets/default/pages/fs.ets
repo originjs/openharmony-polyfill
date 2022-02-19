@@ -104,7 +104,7 @@ struct FSPage {
             this.status = "Write Success!";
             console.info('File directory :' + this.path);
           });
-        }).alignSelf(ItemAlign.Center)
+        })
         Button('Overwrite').onClick(() => {
           try {
             let fs = this.getFs();
@@ -115,7 +115,7 @@ struct FSPage {
             this.status = "Overwrite Fail!";
             console.error(err);
           }
-        }).alignSelf(ItemAlign.Center)
+        })
         Button('OverwriteAsync').onClick(async () => {
           let fs = this.getFs();
           fs.writeFile(this.path, this.text, (err) => {
@@ -125,16 +125,29 @@ struct FSPage {
               this.status = "Overwrite Fail!";
             }
           });
-        }).alignSelf(ItemAlign.Center)
-        Button('appendWriteSync').onClick(() => {
-          try{
+        })
+      }
+
+      Row() {
+        Button('appendSync').onClick(() => {
+          try {
             let fs = this.getFs();
-            this.status = "Overwrite Success!";
             fs.appendFileSync(this.path, this.text)
-          }catch (e){
-            this.status = "Overwrite Fail!";
+            this.status = "appendSync Success!";
+          } catch (e) {
+            this.status = "appendSync Fail!";
           }
-        }).alignSelf(ItemAlign.Center)
+        })
+        Button('appendAsync').onClick(() => {
+          let fs = this.getFs();
+          fs.appendFile(this.path, this.text, (err) => {
+            if (!err) {
+              this.status = "appendAsync Success!";
+            } else {
+              this.status = "appendAsync Fail!";
+            }
+          })
+        })
         Button('Add to end').onClick(async () => {
           try {
             let fs = this.getFs();
@@ -145,7 +158,7 @@ struct FSPage {
             this.status = "Add fail!";
             console.error(err);
           }
-        }).alignSelf(ItemAlign.Center)
+        })
       }
 
       Row() {

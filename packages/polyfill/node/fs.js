@@ -465,6 +465,32 @@ function appendFileSync(file, data, options = {}) {
   }
 }
 
+function appendFile(file, data, options = {}, callback) {
+  const { options: op, callback: fn } = writeFileParamFormat(
+    file,
+    data,
+    options,
+    callback
+  );
+  const flag = op.flag ?? 'a';
+  const mode = op.mode ?? 0o666;
+  if (Number.isInteger(file)) {
+    fileio
+      .write(file, data.toString())
+      .then(() => fn())
+      .catch((err) => fn(err));
+  } else {
+    const promise = new Promise((resolve) => {
+      const fd = fileio.openSync(file.toString(), flagDic[flag], mode);
+      resolve(fd);
+    });
+    promise
+      .then((fd) => writeFile(fd, data.toString()))
+      .then(() => fn())
+      .catch((err) => fn(err));
+  }
+}
+
 function writeFileParamFormat(file, data, options = {}, callback) {
   if (typeof options === 'function') {
     callback = options;
@@ -744,7 +770,8 @@ const harmonyFS = {
   unlinkSync,
   createWriteStream,
   readFile,
-  appendFileSync
+  appendFileSync,
+  appendFile
 };
 
 export default harmonyFS;
