@@ -1,6 +1,6 @@
 import fileio from '@ohos.fileio';
 import { Writable, Readable } from 'stream-browserify';
-globalThis.process = require('process');
+//globalThis.process = require('process');
 
 const FILE_TYPE = { File: 1, Dirent: 2 };
 //type BufferEncoding = 'ascii' | 'utf8' | 'utf-8' | 'utf16le' | 'ucs2' | 'ucs-2' | 'base64' | 'base64url' | 'latin1' | 'binary' | 'hex';
@@ -23,6 +23,26 @@ const flagDic = {
 };
 
 class ReadStream extends Readable {
+  /**
+   * {string}Absolute path of the target file of stream
+   */
+  path;
+
+  /**
+   * {number}File descriptor of the target file of stream
+   */
+  fd;
+
+  /**
+   * {boolean}True before 'ready' event is activated
+   */
+  pending;
+
+  /**
+   * {number}Cumulative bytes that is read into stream
+   */
+  bytesRead;
+
   constructor(path, options) {
     let constructOptions = {};
     constructOptions.highWaterMark = options['highWaterMark'] || 65536;
@@ -57,6 +77,11 @@ class ReadStream extends Readable {
     this.bytesRead = 0;
     this.construct();
   }
+
+  /**
+   * construct
+   * Supplementary constructor
+   */
   construct() {
     if (this.options['fd']) {
       this.fd = this.options['fd'];
@@ -75,6 +100,13 @@ class ReadStream extends Readable {
       }
     }
   }
+
+  /**
+   * _read
+   * @param {number}n: Number of bytes to read
+   * Private function called by build-in function of Readable Class
+   * to read a chunk of buffer from target file, might be called several times in a stream
+   */
   _read(n) {
     let Buffer = require('buffer').Buffer;
     let size = n || 4096;
@@ -102,6 +134,14 @@ class ReadStream extends Readable {
       this.destroy(err);
     }
   }
+
+  /**
+   * _destroy
+   * @param {Error|null} err: Pass-in Error to indicate the reason to destroy the stream
+   * @param {function} callback
+   * Private function called by build-in function of Readable Class
+   * to destroy stream, will activate 'close' event and, if error occurs, 'error' event.
+   */
   _destroy(err, callback) {
     if (typeof callback != 'function') {
       callback = function (err) {
@@ -118,16 +158,24 @@ class ReadStream extends Readable {
       callback(err);
     }
   }
+
   openHandler() {
     this.on('open', (fd) => {
       this.emit('ready');
     });
   }
+
   readyHandler() {
     this.on('ready', () => {
       this.pending = false;
     });
   }
+
+  /**
+   * close
+   * @param {function} callback
+   * Manually close the readstream
+   */
   close(callback) {
     if (typeof callback != 'function') {
       callback = function (err) {
@@ -141,6 +189,26 @@ class ReadStream extends Readable {
 }
 
 class WriteStream extends Writable {
+  /**
+   * {string}Absolute path of the target file of stream
+   */
+  path;
+
+  /**
+   * {number}File descriptor of the target file of stream
+   */
+  fd;
+
+  /**
+   * {boolean}True before 'ready' event is activated
+   */
+  pending;
+
+  /**
+   * {number}Cumulative bytes that stream has written
+   */
+  bytesWritten;
+
   constructor(path, options) {
     let constructOptions = {};
     constructOptions.defaultEncoding = options['encoding'] || 'utf8';
@@ -173,6 +241,11 @@ class WriteStream extends Writable {
     this.bytesWritten = 0;
     this.construct();
   }
+
+  /**
+   * construct
+   * Supplementary constructor
+   */
   construct() {
     if (this.options['fd']) {
       this.fd = this.options['fd'];
@@ -191,6 +264,15 @@ class WriteStream extends Writable {
       }
     }
   }
+
+  /**
+   * _write
+   * @param {string|buffer} chunk: String or Buffer to write
+   * @param {*} encoding: Encoding of 'chunk' if it is a string
+   * @param {*} callback: Function to deal with error
+   * Private function called by build-in function of Writable Class
+   * to write a chunk of string or buffer to target file
+   */
   _write(chunk, encoding, callback) {
     if (encoding) {
       if (typeof encoding == 'function') {
@@ -227,6 +309,14 @@ class WriteStream extends Writable {
       }
     );
   }
+
+  /**
+   * _destroy
+   * @param {Error|null} err: Pass-in Error to indicate the reason to destroy the stream
+   * @param {function} callback
+   * Private function called by build-in function of Readable Class
+   * to destroy stream, will activate 'close' event and, if error occurs, 'error' event.
+   */
   _destroy(err, callback) {
     if (typeof callback != 'function') {
       callback = function (err) {
@@ -243,16 +333,24 @@ class WriteStream extends Writable {
       callback(err);
     }
   }
+
   openHandler() {
     this.on('open', (fd) => {
       this.emit('ready');
     });
   }
+
   readyHandler() {
     this.on('ready', () => {
       this.pending = false;
     });
   }
+
+  /**
+   * close
+   * @param {function} callback
+   * Manually close the readstream
+   */
   close(callback) {
     if (typeof callback != 'function') {
       callback = function (err) {

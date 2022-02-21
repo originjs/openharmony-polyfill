@@ -4,7 +4,7 @@ if (!globalThis.fs) {
   globalThis.harmonyFS = harmonyFS;
 
   if (!globalThis.process) {
-    globalThis.process = {};
+    globalThis.process = require('process');
   }
 
   if (!globalThis.process.versions) {
