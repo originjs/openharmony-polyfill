@@ -1,9 +1,367 @@
 import fileio from '@ohos.fileio';
+import { Writable, Readable } from 'stream-browserify';
+//globalThis.process = require('process');
 
 const FILE_TYPE = { File: 1, Dirent: 2 };
 //type BufferEncoding = 'ascii' | 'utf8' | 'utf-8' | 'utf16le' | 'ucs2' | 'ucs-2' | 'base64' | 'base64url' | 'latin1' | 'binary' | 'hex';
 // 1.File 2.Dirent
 const fileType = Symbol('type');
+const flagDic = {
+  a: 0o1 | 0o100 | 0o2000,
+  ax: 0o1 | 0o100 | 0o200 | 0o2000,
+  'a+': 0o2 | 0o100 | 0o2000,
+  'ax+': 0o2 | 0o100 | 0o200 | 0o2000,
+  as: 0o1 | 0o100 | 0o2000 | 0o4010000,
+  'as+': 0o2 | 0o100 | 0o2000 | 0o4010000,
+  r: 0o0,
+  'r+': 0o2,
+  'rs+': 0o2 | 0o4010000,
+  w: 0o1 | 0o100 | 0o1000,
+  wx: 0o1 | 0o100 | 0o2000 | 0o1000,
+  'w+': 0o2 | 0o100 | 0o1000,
+  'wx+': 0o2 | 0o100 | 0o2000 | 0o1000
+};
+
+class ReadStream extends Readable {
+  /**
+   * {string}Absolute path of the target file of stream
+   */
+  path;
+
+  /**
+   * {number}File descriptor of the target file of stream
+   */
+  fd;
+
+  /**
+   * {boolean}True before 'ready' event is activated
+   */
+  pending;
+
+  /**
+   * {number}Cumulative bytes that is read into stream
+   */
+  bytesRead;
+
+  constructor(path, options) {
+    let constructOptions = {};
+    constructOptions.highWaterMark = options['highWaterMark'] || 65536;
+    constructOptions.defaultEncoding = options['encoding'] || 'utf8';
+    constructOptions.emitClose = options['emitClose'] || 'true';
+    constructOptions.autoDestroy = options['autoClose'] || 'true';
+    super(constructOptions);
+
+    this.options = {};
+    if (!options) {
+      options = {};
+    }
+
+    this.options['flags'] = options.flags || 'r';
+    this.options['encoding'] = options.encoding || 'utf8';
+    this.options['fd'] = options.fd || null;
+    this.options['mode'] = options.mode || 0o666;
+    this.options['autoClose'] = options.autoClose || true;
+    this.options['emitClose'] = options.emitClose || true;
+    this.options['start'] = options.start;
+    this.options['end'] = options.end || Infinity;
+    this.options['fs'] = options.fs || null;
+    if (this.options['encoding'] != 'utf8') {
+      throw 'Only utf8 is supported in HarmonyOS!';
+    }
+
+    this.path = path;
+    this.pending = true;
+    this.fd = null;
+    this.openHandler();
+    this.readyHandler();
+    this.bytesRead = 0;
+    this.construct();
+  }
+
+  /**
+   * construct
+   * Supplementary constructor
+   */
+  construct() {
+    if (this.options['fd']) {
+      this.fd = this.options['fd'];
+      this.path = undefined;
+    } else {
+      try {
+        this.fd = fileio.openSync(
+          this.path.toString(),
+          flagDic[this.options['flags']],
+          this.options['mode']
+        );
+        this.emit('open', this.fd);
+      } catch (err) {
+        console.error(err);
+        throw err;
+      }
+    }
+  }
+
+  /**
+   * _read
+   * @param {number}n: Number of bytes to read
+   * Private function called by build-in function of Readable Class
+   * to read a chunk of buffer from target file, might be called several times in a stream
+   */
+  _read(n) {
+    let Buffer = require('buffer').Buffer;
+    let size = n || 4096;
+    let arrbuf = new ArrayBuffer(size);
+    let buf = Buffer.alloc(size);
+    let readOptions = {};
+    if (this.options['start']) {
+      readOptions.position = this.options['start'];
+    }
+    if (this.options['end']) {
+      readOptions.length = this.options['end'] - this.options['start'];
+    }
+
+    try {
+      let bytesRead = fileio.readSync(
+        this.fd,
+        arrbuf,
+        flagDic[this.options['flags']]
+      );
+      this.bytesRead += bytesRead;
+      buf = Buffer.from(arrbuf);
+      this.push(bytesRead > 0 ? buf.slice(0, bytesRead) : null);
+    } catch (err) {
+      console.error(err);
+      this.destroy(err);
+    }
+  }
+
+  /**
+   * _destroy
+   * @param {Error|null} err: Pass-in Error to indicate the reason to destroy the stream
+   * @param {function} callback
+   * Private function called by build-in function of Readable Class
+   * to destroy stream, will activate 'close' event and, if error occurs, 'error' event.
+   */
+  _destroy(err, callback) {
+    if (typeof callback != 'function') {
+      callback = function (err) {
+        if (err) {
+          throw err;
+        }
+      };
+    }
+    if (this.fd) {
+      fileio.close(this.fd, (er) => {
+        callback(er || err);
+      });
+    } else {
+      callback(err);
+    }
+  }
+
+  openHandler() {
+    this.on('open', (fd) => {
+      this.emit('ready');
+    });
+  }
+
+  readyHandler() {
+    this.on('ready', () => {
+      this.pending = false;
+    });
+  }
+
+  /**
+   * close
+   * @param {function} callback
+   * Manually close the readstream
+   */
+  close(callback) {
+    if (typeof callback != 'function') {
+      callback = function (err) {
+        if (err) {
+          throw err;
+        }
+      };
+    }
+    this.destroy(null, callback);
+  }
+}
+
+class WriteStream extends Writable {
+  /**
+   * {string}Absolute path of the target file of stream
+   */
+  path;
+
+  /**
+   * {number}File descriptor of the target file of stream
+   */
+  fd;
+
+  /**
+   * {boolean}True before 'ready' event is activated
+   */
+  pending;
+
+  /**
+   * {number}Cumulative bytes that stream has written
+   */
+  bytesWritten;
+
+  constructor(path, options) {
+    let constructOptions = {};
+    constructOptions.defaultEncoding = options['encoding'] || 'utf8';
+    constructOptions.emitClose = options['emitClose'] || 'true';
+    constructOptions.autoDestroy = options['autoClose'] || 'true';
+    super(constructOptions);
+
+    this.options = {};
+    if (!options) {
+      options = {};
+    }
+
+    this.options['flags'] = options.flags || 'w';
+    this.options['encoding'] = options.encoding || 'utf8';
+    this.options['fd'] = options.fd || null;
+    this.options['mode'] = options.mode || 0o666;
+    this.options['autoClose'] = options.autoClose || true;
+    this.options['emitClose'] = options.emitClose || true;
+    this.options['start'] = options.start;
+    this.options['fs'] = options.fs || null;
+    if (this.options['encoding'] != 'utf8') {
+      throw 'Only utf8 is supported in HarmonyOS!';
+    }
+
+    this.path = path;
+    this.pending = true;
+    this.fd = null;
+    this.openHandler();
+    this.readyHandler();
+    this.bytesWritten = 0;
+    this.construct();
+  }
+
+  /**
+   * construct
+   * Supplementary constructor
+   */
+  construct() {
+    if (this.options['fd']) {
+      this.fd = this.options['fd'];
+      this.path = undefined;
+    } else {
+      try {
+        this.fd = fileio.openSync(
+          this.path.toString(),
+          flagDic[this.options['flags']],
+          this.options['mode']
+        );
+        this.emit('open', this.fd);
+      } catch (err) {
+        console.error(err);
+        throw err;
+      }
+    }
+  }
+
+  /**
+   * _write
+   * @param {string|buffer} chunk: String or Buffer to write
+   * @param {*} encoding: Encoding of 'chunk' if it is a string
+   * @param {*} callback: Function to deal with error
+   * Private function called by build-in function of Writable Class
+   * to write a chunk of string or buffer to target file
+   */
+  _write(chunk, encoding, callback) {
+    if (encoding) {
+      if (typeof encoding == 'function') {
+        callback = encoding;
+      } else {
+        if (encoding != 'utf8' && encoding != 'buffer') {
+          throw 'Only utf8 and buffer is supported to write in HarmonyOS!';
+        }
+        if (typeof callback != 'function') {
+          callback = function (err) {
+            if (err) {
+              throw err;
+            }
+          };
+        }
+      }
+    }
+    let writeOptions = {};
+    if (this.options['start']) {
+      writeOptions.position = this.options['start'];
+    }
+    fileio.write(
+      this.fd,
+      chunk.toString(),
+      writeOptions,
+      (err, bytesWritten) => {
+        if (err) {
+          console.error(err);
+          callback(err);
+        } else {
+          this.bytesWritten += bytesWritten;
+          callback(null);
+        }
+      }
+    );
+  }
+
+  /**
+   * _destroy
+   * @param {Error|null} err: Pass-in Error to indicate the reason to destroy the stream
+   * @param {function} callback
+   * Private function called by build-in function of Readable Class
+   * to destroy stream, will activate 'close' event and, if error occurs, 'error' event.
+   */
+  _destroy(err, callback) {
+    if (typeof callback != 'function') {
+      callback = function (err) {
+        if (err) {
+          throw err;
+        }
+      };
+    }
+    if (this.fd) {
+      fileio.close(this.fd, (er) => {
+        callback(er || err);
+      });
+    } else {
+      callback(err);
+    }
+  }
+
+  openHandler() {
+    this.on('open', (fd) => {
+      this.emit('ready');
+    });
+  }
+
+  readyHandler() {
+    this.on('ready', () => {
+      this.pending = false;
+    });
+  }
+
+  /**
+   * close
+   * @param {function} callback
+   * Manually close the readstream
+   */
+  close(callback) {
+    if (typeof callback != 'function') {
+      callback = function (err) {
+        if (err) {
+          throw err;
+        }
+      };
+    }
+    this.destroy(null, callback);
+  }
+}
 
 /**
  * Reads the contents of the directory.
@@ -399,22 +757,6 @@ function write(fd, buffer, offset, length, position, callback) {
   });
 }
 
-const flagDic = {
-  a: 0o1 | 0o100 | 0o2000,
-  ax: 1217,
-  'a+': 1090,
-  'ax+': 1218,
-  as: 1053761,
-  'as+': 1053762,
-  r: 0,
-  'r+': 2,
-  'rs+': 1052674,
-  w: 577,
-  wx: 705,
-  'w+': 578,
-  'wx+': 706
-};
-
 /**
  * Write data to files
  * @param {string|buffer|integer} file: path of the file
@@ -539,6 +881,44 @@ function writeFile(file, data, options, callback) {
 }
 
 /**
+ * createReadStream
+ * @param {string|Buffer}path
+ * @param {object|string}options
+ */
+function createReadStream(path, options) {
+  if (!path || !path.toString || !path.toString()) {
+    throw 'Data input cannot be converted to string.';
+  }
+  if (!options) {
+    options = {};
+  }
+  if (typeof options == 'string') {
+    options = { encoding: options };
+  }
+  let stream = new ReadStream(path, options);
+  return stream;
+}
+
+/**
+ * createWriteStream
+ * @param {string|Buffer}path
+ * @param {object|string}options
+ */
+function createWriteStream(path, options) {
+  if (!path || !path.toString || !path.toString()) {
+    throw 'Data input cannot be converted to string.';
+  }
+  if (!options) {
+    options = {};
+  }
+  if (typeof options == 'string') {
+    options = { encoding: options };
+  }
+  let stream = new WriteStream(path, options);
+  return stream;
+}
+
+/**
  * Delete a file
  * @param {string | Buffer} path: The path of the file to delete
  */
@@ -556,8 +936,6 @@ function unlinkSync(path) {
     );
   }
 }
-
-function createWriteStream() {}
 
 /**
  * readFile callback
@@ -779,6 +1157,7 @@ const harmonyFS = {
   writeFileSync,
   writeFile,
   unlinkSync,
+  createReadStream,
   createWriteStream,
   readFile,
   appendFileSync,
