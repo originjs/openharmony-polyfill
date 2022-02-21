@@ -104,8 +104,8 @@ struct FSPage {
             this.status = "Write Success!";
             console.info('File directory :' + this.path);
           });
-        }).alignSelf(ItemAlign.Center)
-        Button('Overwrite').onClick(async () => {
+        })
+        Button('Overwrite').onClick(() => {
           try {
             let fs = this.getFs();
             fs.writeFileSync(this.path, this.text);
@@ -115,7 +115,39 @@ struct FSPage {
             this.status = "Overwrite Fail!";
             console.error(err);
           }
-        }).alignSelf(ItemAlign.Center)
+        })
+        Button('OverwriteAsync').onClick(async () => {
+          let fs = this.getFs();
+          fs.writeFile(this.path, this.text, (err) => {
+            if (!err) {
+              this.status = "Overwrite Success!";
+            } else {
+              this.status = "Overwrite Fail!";
+            }
+          });
+        })
+      }
+
+      Row() {
+        Button('appendSync').onClick(() => {
+          try {
+            let fs = this.getFs();
+            fs.appendFileSync(this.path, this.text)
+            this.status = "appendSync Success!";
+          } catch (e) {
+            this.status = "appendSync Fail!";
+          }
+        })
+        Button('appendAsync').onClick(() => {
+          let fs = this.getFs();
+          fs.appendFile(this.path, this.text, (err) => {
+            if (!err) {
+              this.status = "appendAsync Success!";
+            } else {
+              this.status = "appendAsync Fail!";
+            }
+          })
+        })
         Button('Add to end').onClick(async () => {
           try {
             let fs = this.getFs();
@@ -126,17 +158,18 @@ struct FSPage {
             this.status = "Add fail!";
             console.error(err);
           }
-        }).alignSelf(ItemAlign.Center)
+        })
       }
-      Row(){
+
+      Row() {
         Button('Get File Stat(sync)').onClick(() => {
           try {
             let fs = this.getFs();
             let status = fs.statSync(this.path);
             this.status = "Stat Success(sync)!";
             this.readText = "";
-            for (let prop in status){
-              if ((status[prop].toString)&&(status[prop].toString())&&(typeof(status[prop])!='function'))
+            for (let prop in status) {
+              if ((status[prop].toString) && (status[prop].toString()) && (typeof (status[prop]) != 'function'))
               this.readText += prop + ': ' + status[prop].toString() + '\n';
             }
           } catch (err) {
@@ -147,20 +180,21 @@ struct FSPage {
         Button('Get File Stat(async)').onClick(() => {
           let fs = this.getFs();
           fs.stat(this.path)
-            .then((status)=>{
+            .then((status) => {
               this.status = "Stat Success(async)!";
               this.readText = "";
-              for (let prop in status){
-                if ((status[prop].toString)&&(status[prop].toString())&&(typeof(status[prop])!='function'))
+              for (let prop in status) {
+                if ((status[prop].toString) && (status[prop].toString()) && (typeof (status[prop]) != 'function'))
                 this.readText += prop + ': ' + status[prop].toString() + '\n';
               }
             })
-            .catch((err)=>{
+            .catch((err) => {
               this.status = "Stat Success(async)!";
               console.error(err);
             })
         })
       }
+
       Button('Delete file').onClick(() => {
         try {
           let fs = this.getFs();
@@ -172,11 +206,12 @@ struct FSPage {
         }
       })
       Text('Content:').fontSize(16).fontWeight(FontWeight.Bolder)
-      Scroll(){
+      Scroll() {
         Text(this.readText).fontSize(16)
-          .textOverflow({overflow:TextOverflow.None})
+          .textOverflow({ overflow: TextOverflow.None })
           .border({ width: 1, color: "red" }).width('100%')
       }
+
       Button('Read File').onClick(async () => {
         try {
           let fs = this.getFs();
@@ -200,6 +235,29 @@ struct FSPage {
           console.error(err);
         }
 
+      }).alignSelf(ItemAlign.Center)
+
+      Button('create folder sync').onClick(() => {
+        const fs = this.getFs();
+        const path = `${this.appDir}/dir1/dir2/dir3/dir4`;
+        try {
+          const returnValue = fs.mkdirSync(path, { recursive: true });
+          this.status = `create folder successfully(returnValue=${returnValue})`
+        } catch (e) {
+          this.status = 'create folder failed';
+        }
+      }).alignSelf(ItemAlign.Center)
+
+      Button('create folder async').onClick(() => {
+        const fs = this.getFs();
+        const path = `${this.appDir}/dir11/dir22/dir33/dir44`;
+        fs.mkdir(path, { recursive: true }, (err, returnValue) => {
+          if (!err) {
+            this.status = `create folder successfully(returnValue=${returnValue})`
+          } else {
+            this.status = 'create folder failed';
+          }
+        });
       }).alignSelf(ItemAlign.Center)
     }
     .width('100%')

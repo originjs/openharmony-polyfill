@@ -1,3 +1,12 @@
+# [0.5.0](https://github.com/originjs/openharmony-polyfill/compare/v0.4.0...v0.5.0) (2022-02-19)
+
+
+### Features
+
+* add fs.writeFile ([#16](https://github.com/originjs/openharmony-polyfill/issues/16)) ([c72f988](https://github.com/originjs/openharmony-polyfill/commit/c72f988a7367f635ec8205812081c8503191979b))
+
+
+
 # [0.4.0](https://gitee.com/originjs/openharmony-polyfill/compare/v0.3.0...v0.4.0) (2022-01-24)
 
 

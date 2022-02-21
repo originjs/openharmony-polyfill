@@ -88,6 +88,4 @@ class Crypto {
   }
 }
 
-if (!globalThis.crypto) {
-  globalThis.crypto = new Crypto();
-}
+export const crypto = new Crypto();

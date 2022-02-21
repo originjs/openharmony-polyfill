@@ -242,6 +242,7 @@ function statPromises(path, options) {
       resolve(stat);
     });
   }
+
   const Promises = require('promise');
   return new Promises(_statP);
 }
@@ -398,6 +399,22 @@ function write(fd, buffer, offset, length, position, callback) {
   });
 }
 
+const flagDic = {
+  a: 0o1 | 0o100 | 0o2000,
+  ax: 1217,
+  'a+': 1090,
+  'ax+': 1218,
+  as: 1053761,
+  'as+': 1053762,
+  r: 0,
+  'r+': 2,
+  'rs+': 1052674,
+  w: 577,
+  wx: 705,
+  'w+': 578,
+  'wx+': 706
+};
+
 /**
  * Write data to files
  * @param {string|buffer|integer} file: path of the file
@@ -408,40 +425,9 @@ function write(fd, buffer, offset, length, position, callback) {
  * a mode property specifying the permission of the file if being created.
  */
 function writeFileSync(file, data, options) {
-  if (!options) {
-    options = {};
-  }
-  if (!data || !data.toString || !data.toString()) {
-    throw 'Data input cannot be converted to string.';
-  }
-  var coding;
-  const flag = options.flag || 'w';
-  if (typeof options == 'string') {
-    coding = options;
-  } else {
-    coding = options.encoding || 'utf8';
-  }
-  const mode = options.mode || 0o666;
-
-  if (coding != 'utf8') {
-    throw 'Only utf8 is supported to write';
-  }
-
-  const flagDic = {
-    a: 1089,
-    ax: 1217,
-    'a+': 1090,
-    'ax+': 1218,
-    as: 1053761,
-    'as+': 1053762,
-    r: 0,
-    'r+': 2,
-    'rs+': 1052674,
-    w: 577,
-    wx: 705,
-    'w+': 578,
-    'wx+': 706
-  };
+  const { options: op } = writeFileParamFormat(file, data, options);
+  const flag = op.flag || 'w';
+  const mode = op.mode || 0o666;
   if (Number.isInteger(file)) {
     try {
       fileio.writeSync(file, data.toString());
@@ -464,6 +450,91 @@ function writeFileSync(file, data, options) {
         'Write File failed at ' + file + '! ' + err.name + ':' + err.message
       );
     }
+  }
+}
+
+function appendFileSync(file, data, options = {}) {
+  const { options: op } = writeFileParamFormat(file, data, options);
+  const flag = op.flag || 'a';
+  const mode = op.mode || 0o666;
+  if (Number.isInteger(file)) {
+    fileio.writeSync(file, data.toString());
+  } else {
+    let fd = fileio.openSync(file.toString(), flagDic[flag], mode);
+    fileio.writeSync(fd, data.toString());
+  }
+}
+
+function appendFile(file, data, options = {}, callback) {
+  const { options: op, callback: fn } = writeFileParamFormat(
+    file,
+    data,
+    options,
+    callback
+  );
+  const flag = op.flag ?? 'a';
+  const mode = op.mode ?? 0o666;
+  if (Number.isInteger(file)) {
+    fileio
+      .write(file, data.toString())
+      .then(() => fn())
+      .catch((err) => fn(err));
+  } else {
+    const promise = new Promise((resolve) => {
+      const fd = fileio.openSync(file.toString(), flagDic[flag], mode);
+      resolve(fd);
+    });
+    promise
+      .then((fd) => writeFile(fd, data.toString()))
+      .then(() => fn())
+      .catch((err) => fn(err));
+  }
+}
+
+function writeFileParamFormat(file, data, options = {}, callback) {
+  if (typeof options === 'function') {
+    callback = options;
+    options = {};
+  }
+  if (!data || !data.toString || !data.toString()) {
+    throw 'Data input cannot be converted to string.';
+  }
+  let coding;
+  if (typeof options == 'string') {
+    coding = options;
+  } else {
+    coding = options.encoding || 'utf8';
+  }
+  if (coding !== 'utf8') {
+    throw 'Only utf8 is supported to write';
+  }
+  return { options: options, callback: callback };
+}
+
+function writeFile(file, data, options, callback) {
+  const { options: op, callback: fn } = writeFileParamFormat(
+    file,
+    data,
+    options,
+    callback
+  );
+  const flag = op.flag || 'w';
+  const mode = op.mode || 0o666;
+  if (Number.isInteger(file)) {
+    fileio
+      .write(file, data.toString())
+      .then(() => fn())
+      .catch((err) => fn(err));
+  } else {
+    if (!file || !file.toString || !file.toString()) {
+      throw 'Data input cannot be converted to string.';
+    }
+    new Promise((resolve) =>
+      resolve(fileio.openSync(file.toString(), flagDic[flag], mode))
+    )
+      .then((fd) => fileio.write(fd, data.toString()))
+      .then(() => fn())
+      .catch((err) => fn(err));
   }
 }
 
@@ -583,7 +654,121 @@ function readFilePromises(path, options) {
   return new Promises(_readFile);
 }
 
+/**
+ * If it is recursive mode returns the first created directory, otherwise it returns undefined
+ * @param {string} path
+ * @param { Object } [options = { recursive: false, mode: 0o777}]
+ */
+function mkdirSync(path, options) {
+  options = mkdirParamFormat(options);
+  if (options.recursive) {
+    // when options.recursive is true need to return the first created directory
+    const obj = {};
+    mkdirRecursive(path, options, obj);
+    return obj.path;
+  } else {
+    fileio.mkdirSync(path, options.mode);
+  }
+}
+
+/**
+ * If it is recursive mode returns the first created directory, otherwise it returns undefined
+ * @param {string} path
+ * @param { Object } [options = { recursive: false, mode: 0o777}]
+ * @param {function(err,[path]) } callback
+ */
+function mkdir(path, options, callback) {
+  options = mkdirParamFormat(options);
+  if (options.recursive) {
+    // when options.recursive is true need to return the first created directory
+    const obj = {};
+    mkdirRecursiveAsync(path, options, obj)
+      .then(() => {
+        callback(undefined, obj.path);
+      })
+      .catch((err) => {
+        callback(err, obj.path);
+      });
+  } else {
+    fileio.mkdir(path, options.mode, callback);
+  }
+}
+
+function mkdirRecursive(path, options, obj) {
+  try {
+    fileio.accessSync(path);
+    return true;
+  } catch (e) {
+    if (mkdirRecursive(dirname(path), options, obj)) {
+      fileio.mkdirSync(path, options.mode);
+      // record the first create path in recursive mode
+      obj.path = obj.path ?? path;
+      return true;
+    }
+  }
+}
+
+async function mkdirRecursiveAsync(path, options, obj) {
+  try {
+    await fileio.access(path);
+    return true;
+  } catch (e) {
+    if (await mkdirRecursiveAsync(dirname(path), options, obj)) {
+      await fileio.mkdir(path, options.mode);
+      obj.path = obj.path ?? path;
+      return true;
+    }
+  }
+}
+
+function mkdirParamFormat(options) {
+  options = options ?? {};
+  options.recursive = options.recursive ?? false;
+  options.mode = options.mode ?? 0o777;
+  if (typeof options.mode === 'string') {
+    options.mode = Number(options.mode);
+  }
+  return options;
+}
+
+function dirname(path) {
+  if (path.length === 0) return '.';
+  let code = path.charCodeAt(0);
+  const hasRoot = code === 47;
+  let end = -1;
+  let matchedSlash = true;
+  for (let i = path.length - 1; i >= 1; --i) {
+    code = path.charCodeAt(i);
+    if (code === 47) {
+      if (!matchedSlash) {
+        end = i;
+        break;
+      }
+    } else {
+      // We saw the first non-path separator
+      matchedSlash = false;
+    }
+  }
+
+  if (end === -1) return hasRoot ? '/' : '.';
+  if (hasRoot && end === 1) return '//';
+  return path.slice(0, end);
+}
+
+function closeSync(fd) {
+  fileio.closeSync(fd);
+}
+
+function close(fd, callback = () => {}) {
+  fileio
+    .close(fd)
+    .then(() => callback())
+    .catch((err) => callback(err));
+}
+
 const harmonyFS = {
+  mkdirSync,
+  mkdir,
   readdirSync,
   readFileSync,
   exists,
@@ -592,9 +777,14 @@ const harmonyFS = {
   statSync,
   write,
   writeFileSync,
+  writeFile,
   unlinkSync,
   createWriteStream,
-  readFile
+  readFile,
+  appendFileSync,
+  appendFile,
+  close,
+  closeSync
 };
 
 export default harmonyFS;

@@ -7,6 +7,6 @@
     "autobahn-browser": "^20.9.2",
     "axios": "^0.24.0",
     "js-base64": "^3.7.2",
-    "openharmony-polyfill": "file:../.."
+    "openharmony-polyfill": "file:../../packages/polyfill"
   }
 }
