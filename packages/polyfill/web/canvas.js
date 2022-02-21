@@ -87,5 +87,3 @@ export default class HmCanvas {
     return this.canvasNode.getBoundingClientRect().height;
   }
 }
-
-globalThis.HmCanvas = HmCanvas;

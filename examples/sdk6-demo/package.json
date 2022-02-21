@@ -1,6 +1,6 @@
 {
   "dependencies": {
     "axios": "^0.24.0",
-    "openharmony-polyfill": "file:../.."
+    "openharmony-polyfill": "file:../../packages/polyfill"
   }
 }

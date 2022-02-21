@@ -3,10 +3,12 @@
     "@aws-sdk/client-cognito-identity": "^3.45.0",
     "@aws-sdk/client-lambda": "^3.45.0",
     "@aws-sdk/credential-provider-cognito-identity": "^3.45.0",
-    "protobufjs": "^6.10.2",
     "autobahn-browser": "^20.9.2",
     "axios": "^0.24.0",
     "js-base64": "^3.7.2",
-    "openharmony-polyfill": "file:../.."
+    "openharmony-polyfill": "file:../../packages/polyfill",
+    "process": "^0.11.10",
+    "protobufjs": "^6.10.2",
+    "stream-browserify": "^3.0.0"
   }
 }
