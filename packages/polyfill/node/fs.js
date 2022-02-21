@@ -1170,11 +1170,36 @@ function openSync(path, flags = 'r', mode = 0o666) {
   return fileio.openSync(path, flagDic[flags], mode);
 }
 
+/**
+ * path[, options], callback
+ */
+function readdir(path, options, callback) {
+  if (arguments.length === 2) {
+    callback = options;
+    options = { encoding: 'utf-8', withFileTypes: false };
+  }
+
+  fileio
+    .opendir(path)
+    .then((dirStream) => {
+      let dirent;
+      const result = [];
+      while (null != (dirent = dirStream.readSync())) {
+        result.push(options.withFileTypes ? dirent : dirent.name);
+      }
+      dirStream.closeSync();
+      return result;
+    })
+    .then((res) => callback(undefined, res))
+    .catch((err) => callback(err));
+}
+
 const harmonyFS = {
   open,
   openSync,
   mkdirSync,
   mkdir,
+  readdir,
   readdirSync,
   readFileSync,
   exists,

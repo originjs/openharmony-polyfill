@@ -134,6 +134,18 @@ struct FSPage {
         })
       }
 
+        Button('readdir').onClick(() => {
+          let fs = this.getFs();
+          fs.readdir(this.appDir,(err,res)=>{
+            if(!err){
+              this.readText = `${JSON.stringify(res)}`;
+              this.status = "Read dir Success!";
+            }else {
+              this.status = "Read dir Fail!"
+            }
+          })
+        })
+
       Row() {
         Button('appendSync').onClick(() => {
           try {
