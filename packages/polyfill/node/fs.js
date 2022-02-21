@@ -1144,7 +1144,35 @@ function close(fd, callback = () => {}) {
     .catch((err) => callback(err));
 }
 
+/**
+ * path[, flags[, mode]], callback
+ */
+function open(path, flags, mode, callback) {
+  if (arguments.length < 3) {
+    callback = flags;
+    flags = 'r';
+    mode = 0o666;
+  } else if (typeof mode === 'function') {
+    callback = mode;
+    mode = 0o666;
+  }
+
+  fileio
+    .open(path, flagDic[flags], mode)
+    .then((fd) => callback(undefined, fd))
+    .catch((err) => callback(err));
+}
+
+/**
+ * path[, flags[, mode]]
+ */
+function openSync(path, flags = 'r', mode = 0o666) {
+  return fileio.openSync(path, flagDic[flags], mode);
+}
+
 const harmonyFS = {
+  open,
+  openSync,
   mkdirSync,
   mkdir,
   readdirSync,
