@@ -1,9 +1,10 @@
-import Base64Js from './Base64-js.ets';
-import URLSearchParamsPolyfillJsunit from './URLSearchParamsPolyfillJsunit.ets';
-import URLPolyfillJsunit from './URLPolyfillJsunit.ets';
-import TextEncoderPolyfillJsunit from './TextEncoderPolyfillJsunit.ets';
-import TextDecoderPolyfillJsunit from './TextDecoderPolyfillJsunit.ets';
+import Base64Js from "./Base64-js.ets";
+import URLSearchParamsPolyfillJsunit from "./URLSearchParamsPolyfillJsunit.ets";
+import URLPolyfillJsunit from "./URLPolyfillJsunit.ets";
+import TextEncoderPolyfillJsunit from "./TextEncoderPolyfillJsunit.ets";
+import TextDecoderPolyfillJsunit from "./TextDecoderPolyfillJsunit.ets";
 import exampleJsunit from "../test/XhrPolyfillJsunit.test.ets"
+import XhrPolyfillJsunit from "./XhrPolyfillJsunit.ets";
 
 export default function testsuite() {
   exampleJsunit()
@@ -12,4 +13,5 @@ export default function testsuite() {
   URLPolyfillJsunit()
   URLSearchParamsPolyfillJsunit()
   Base64Js()
+  XhrPolyfillJsunit()
 }
