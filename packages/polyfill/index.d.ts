@@ -4,7 +4,7 @@ declare function fetch(
   init?: RequestInit
 ): Promise<Response>;
 
-interface XMLHttpRequestEventTarget {
+declare class XMLHttpRequest{
   onabort: ((this: XMLHttpRequest, ev: ProgressEvent) => any) | null;
   onerror: ((this: XMLHttpRequest, ev: ProgressEvent) => any) | null;
   onload: ((this: XMLHttpRequest, ev: ProgressEvent) => any) | null;
@@ -38,8 +38,6 @@ interface XMLHttpRequestEventTarget {
     listener: EventListenerOrEventListenerObject,
     options?: boolean | EventListenerOptions
   ): void;
-}
-declare class XMLHttpRequest extends XMLHttpRequestEventTarget {
   onreadystatechange: ((this: XMLHttpRequest, ev: Event) => any) | null;
   readonly readyState: number;
   readonly response: any;
