@@ -1,10 +1,9 @@
 import {describe, beforeAll, beforeEach, afterEach, afterAll, it, expect} from "deccjsunit/index"
 import 'openharmony-polyfill';
 
-export default function exampleJsunit() {
-
+export default function XhrPolyfillJsunit() {
   describe('xhrPolyfillTest', function () {
-    it('xhr_noraml', 0, async function (done) {
+    it('xhr_normal', 0, async function (done) {
       const xhr = new XMLHttpRequest();
       xhr.onload = function() {
         expect(xhr.status).assertEqual(200);
@@ -35,6 +34,10 @@ export default function exampleJsunit() {
         expect(xhr.status).assertEqual(200);
         expect(xhr.statusText).assertEqual('OK');
         expect(xhr.getResponseHeader('content-type')).assertEqual('text/html');
+
+//        expect(xhr.response).assertEqual('OK');
+//        expect(xhr.responseURL).assertEqual('OK');
+//        expect(xhr.responseType).assertEqual('OK');
         done();
       });
       xhr.open('GET','https://www.baidu.com/');
