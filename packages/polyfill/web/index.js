@@ -1,7 +1,7 @@
 /**
  * polyfill for URL
  */
-import { URL, URLSearchParams } from './web/url';
+import { URL, URLSearchParams } from './url';
 if (URL && !globalThis.URL) {
   globalThis.URL = URL;
 }
@@ -11,7 +11,7 @@ if (URLSearchParams && !globalThis.URLSearchParams) {
 /**
  * polyfill for Encoding
  */
-import { TextDecoder, TextEncoder } from './web/encoding';
+import { TextDecoder, TextEncoder } from './encoding';
 if (TextDecoder && !globalThis.TextDecoder) {
   globalThis.TextDecoder = TextDecoder;
 }
@@ -21,7 +21,7 @@ if (TextEncoder && !globalThis.TextEncoder) {
 /**
  * polyfill for XMLHttpRequest
  */
-import { XMLHttpRequest } from './web/xhr';
+import { XMLHttpRequest } from './xhr';
 if (!globalThis.XMLHttpRequest) {
   globalThis.XMLHttpRequest = XMLHttpRequest;
   globalThis.navigator = {
@@ -32,7 +32,7 @@ if (!globalThis.XMLHttpRequest) {
 /**
  * polyfill for fetch
  */
-import { fetch as _fetch, Headers, Request, Response } from './web/fetch';
+import { fetch as _fetch, Headers, Request, Response } from './fetch';
 _fetch.polyfill = true;
 if (!globalThis.fetch) {
   globalThis.fetch = _fetch;
@@ -50,7 +50,7 @@ if (!globalThis.fetch) {
 /**
  * polyfill for Crypto
  */
-import { crypto } from './web/crypto';
+import { crypto } from './crypto';
 if (!globalThis.crypto) {
   globalThis.crypto = crypto;
 }
@@ -58,7 +58,7 @@ if (!globalThis.crypto) {
 /**
  * polyfill for WebSocket
  */
-import { WebSocket as _WebSocket } from './web/websocket';
+import { WebSocket as _WebSocket } from './websocket';
 if (!globalThis.WebSocket) {
   globalThis.WebSocket = _WebSocket;
   WebSocket = _WebSocket;
@@ -67,12 +67,12 @@ if (!globalThis.WebSocket) {
 /**
  * polyfill for Canvas
  */
-import { HmCanvas } from './web/canvas';
+import { HmCanvas } from './canvas';
 globalThis.HmCanvas = HmCanvas;
 
 /**
  * polyfill for Storage
  */
-import { LocalStorage } from './web/storage';
+import { LocalStorage } from './storage';
 LocalStorage.init();
 globalThis.localStorage = globalThis.localStorage ?? LocalStorage;
