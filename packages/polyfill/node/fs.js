@@ -22,7 +22,7 @@ const flagDic = {
   'wx+': 0o2 | 0o100 | 0o2000 | 0o1000
 };
 
-class ReadStream extends Readable {
+export class ReadStream extends Readable {
   /**
    * {string}Absolute path of the target file of stream
    */
@@ -188,7 +188,7 @@ class ReadStream extends Readable {
   }
 }
 
-class WriteStream extends Writable {
+export class WriteStream extends Writable {
   /**
    * {string}Absolute path of the target file of stream
    */
@@ -371,7 +371,7 @@ class WriteStream extends Writable {
  * for the filenames returned.
  * @returns {string[] | fileio.Dirent[]}
  */
-function readdirSync(path, options) {
+export function readdirSync(path, options) {
   if (!path || !path.toString || !path.toString()) {
     throw 'Data input cannot be converted to string.';
   }
@@ -414,7 +414,7 @@ function readdirSync(path, options) {
  * @param options
  * @returns {string | Buffer}
  */
-function readFileSync(path, options) {
+export function readFileSync(path, options) {
   if (!options) {
     options = {};
   }
@@ -468,7 +468,7 @@ function readFileSync(path, options) {
  * @param {string|buffer}path
  * @param {(boolean isExists)=>any}callback: isExists = true if the file exists, false otherwise
  */
-function exists(path, callback) {
+export function exists(path, callback) {
   if (!path || !path.toString || !path.toString()) {
     throw 'Data input cannot be converted to string.';
   }
@@ -487,7 +487,7 @@ function exists(path, callback) {
  * @param {string|Buffer} path
  * @returns {boolean}
  */
-function existsSync(path) {
+export function existsSync(path) {
   if (!path || !path.toString || !path.toString()) {
     throw 'Data input cannot be converted to string.';
   }
@@ -508,7 +508,7 @@ function existsSync(path) {
  * @param {object}options
  * @param {function}callback
  */
-function stat(path, options, callback) {
+export function stat(path, options, callback) {
   if (typeof options == 'function') {
     callback = options;
   }
@@ -525,7 +525,7 @@ function stat(path, options, callback) {
   }
 }
 
-function statPromises(path, options) {
+export function statPromises(path, options) {
   function _statP(resolve, reject) {
     let _bigint = options.bigint || false;
     if (!path || !path.toString || !path.toString()) {
@@ -611,7 +611,7 @@ function statPromises(path, options) {
  * @param {object}options
  * @return {Stat}
  */
-function statSync(path, options) {
+export function statSync(path, options) {
   if (!options) {
     options = {};
   }
@@ -703,7 +703,7 @@ function statSync(path, options) {
  */
 //Important Notice: If content is inserted behind any empty bytes(\0),
 //such content cannot be displayed because Openharmony cannot recognize '\0'
-function write(fd, buffer, offset, length, position, callback) {
+export function write(fd, buffer, offset, length, position, callback) {
   var options = {};
   //Another version of write is defined as:
   //fs.write(fd, string[, position[,encoding]], callback)
@@ -766,7 +766,7 @@ function write(fd, buffer, offset, length, position, callback) {
  * for the data written(now only utf8 is supported), a flag property specifying the mode to open the file and
  * a mode property specifying the permission of the file if being created.
  */
-function writeFileSync(file, data, options) {
+export function writeFileSync(file, data, options) {
   const { options: op } = writeFileParamFormat(file, data, options);
   const flag = op.flag || 'w';
   const mode = op.mode || 0o666;
@@ -795,7 +795,7 @@ function writeFileSync(file, data, options) {
   }
 }
 
-function appendFileSync(file, data, options = {}) {
+export function appendFileSync(file, data, options = {}) {
   const { options: op } = writeFileParamFormat(file, data, options);
   const flag = op.flag || 'a';
   const mode = op.mode || 0o666;
@@ -807,7 +807,7 @@ function appendFileSync(file, data, options = {}) {
   }
 }
 
-function appendFile(file, data, options = {}, callback) {
+export function appendFile(file, data, options = {}, callback) {
   const { options: op, callback: fn } = writeFileParamFormat(
     file,
     data,
@@ -833,7 +833,7 @@ function appendFile(file, data, options = {}, callback) {
   }
 }
 
-function writeFileParamFormat(file, data, options = {}, callback) {
+export function writeFileParamFormat(file, data, options = {}, callback) {
   if (typeof options === 'function') {
     callback = options;
     options = {};
@@ -853,7 +853,7 @@ function writeFileParamFormat(file, data, options = {}, callback) {
   return { options: options, callback: callback };
 }
 
-function writeFile(file, data, options, callback) {
+export function writeFile(file, data, options, callback) {
   const { options: op, callback: fn } = writeFileParamFormat(
     file,
     data,
@@ -885,7 +885,7 @@ function writeFile(file, data, options, callback) {
  * @param {string|Buffer}path
  * @param {object|string}options
  */
-function createReadStream(path, options) {
+export function createReadStream(path, options) {
   if (!path || !path.toString || !path.toString()) {
     throw 'Data input cannot be converted to string.';
   }
@@ -904,7 +904,7 @@ function createReadStream(path, options) {
  * @param {string|Buffer}path
  * @param {object|string}options
  */
-function createWriteStream(path, options) {
+export function createWriteStream(path, options) {
   if (!path || !path.toString || !path.toString()) {
     throw 'Data input cannot be converted to string.';
   }
@@ -922,7 +922,7 @@ function createWriteStream(path, options) {
  * Delete a file
  * @param {string | Buffer} path: The path of the file to delete
  */
-function unlinkSync(path) {
+export function unlinkSync(path) {
   if (!path || !path.toString || !path.toString()) {
     throw 'Data input cannot be converted to string.';
   }
@@ -951,7 +951,7 @@ function unlinkSync(path) {
  * @param {string | Object } [options = { encoding : null, flag: 'r',signal: AbortSignal}]  [options]
  * @param {readFileCallback } callback
  */
-function readFile(path, options, callback) {
+export function readFile(path, options, callback) {
   if (typeof options == 'function') {
     callback = options;
   }
@@ -969,7 +969,7 @@ function readFile(path, options, callback) {
   }
 }
 
-function readFilePromises(path, options) {
+export function readFilePromises(path, options) {
   if (!options) {
     options = {};
   }
@@ -1037,7 +1037,7 @@ function readFilePromises(path, options) {
  * @param {string} path
  * @param { Object } [options = { recursive: false, mode: 0o777}]
  */
-function mkdirSync(path, options) {
+export function mkdirSync(path, options) {
   options = mkdirParamFormat(options);
   if (options.recursive) {
     // when options.recursive is true need to return the first created directory
@@ -1055,7 +1055,7 @@ function mkdirSync(path, options) {
  * @param { Object } [options = { recursive: false, mode: 0o777}]
  * @param {function(err,[path]) } callback
  */
-function mkdir(path, options, callback) {
+export function mkdir(path, options, callback) {
   options = mkdirParamFormat(options);
   if (options.recursive) {
     // when options.recursive is true need to return the first created directory
@@ -1109,7 +1109,7 @@ function mkdirParamFormat(options) {
   return options;
 }
 
-function dirname(path) {
+export function dirname(path) {
   if (path.length === 0) return '.';
   let code = path.charCodeAt(0);
   const hasRoot = code === 47;
@@ -1133,11 +1133,11 @@ function dirname(path) {
   return path.slice(0, end);
 }
 
-function closeSync(fd) {
+export function closeSync(fd) {
   fileio.closeSync(fd);
 }
 
-function close(fd, callback = () => {}) {
+export function close(fd, callback = () => {}) {
   fileio
     .close(fd)
     .then(() => callback())
@@ -1147,7 +1147,7 @@ function close(fd, callback = () => {}) {
 /**
  * path[, flags[, mode]], callback
  */
-function open(path, flags, mode, callback) {
+export function open(path, flags, mode, callback) {
   if (arguments.length < 3) {
     callback = flags;
     flags = 'r';
@@ -1166,14 +1166,14 @@ function open(path, flags, mode, callback) {
 /**
  * path[, flags[, mode]]
  */
-function openSync(path, flags = 'r', mode = 0o666) {
+export function openSync(path, flags = 'r', mode = 0o666) {
   return fileio.openSync(path, flagDic[flags], mode);
 }
 
 /**
  * path[, options], callback
  */
-function readdir(path, options, callback) {
+export function readdir(path, options, callback) {
   if (arguments.length === 2) {
     callback = options;
     options = { encoding: 'utf-8', withFileTypes: false };
@@ -1193,30 +1193,3 @@ function readdir(path, options, callback) {
     .then((res) => callback(undefined, res))
     .catch((err) => callback(err));
 }
-
-const harmonyFS = {
-  open,
-  openSync,
-  mkdirSync,
-  mkdir,
-  readdir,
-  readdirSync,
-  readFileSync,
-  exists,
-  existsSync,
-  stat,
-  statSync,
-  write,
-  writeFileSync,
-  writeFile,
-  unlinkSync,
-  createReadStream,
-  createWriteStream,
-  readFile,
-  appendFileSync,
-  appendFile,
-  close,
-  closeSync
-};
-
-export default harmonyFS;

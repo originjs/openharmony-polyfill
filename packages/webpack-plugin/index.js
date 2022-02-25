@@ -14,6 +14,10 @@ module.exports = class OpenharmonyPolyfillPlugin {
 
   apply(compiler) {
     compiler.options.plugins.push(
+      /**
+       * Automatically load modules instead of having to import or require them.
+       * @see https://webpack.js.org/plugins/provide-plugin/
+       */
       new ProvidePlugin(
         excludeObjectKeys(
           {
@@ -32,6 +36,10 @@ module.exports = class OpenharmonyPolyfillPlugin {
       )
     );
 
+    /**
+     * Redirect module requests when normal resolving fails.
+     * @see https://webpack.js.org/configuration/resolve/#resolvefallback
+     */
     compiler.options.resolve.fallback = {
       ...excludeObjectKeys(
         {
