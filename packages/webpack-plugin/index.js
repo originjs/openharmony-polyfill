@@ -51,6 +51,9 @@ module.exports = class OpenharmonyPolyfillPlugin {
           crypto: require.resolve('crypto-browserify'),
           domain: require.resolve('domain-browser'),
           events: require.resolve('events/'),
+          // TODO: rewrite with openharmony http api
+          http: require.resolve('stream-http'),
+          https: require.resolve('https-browserify'),
           os: require.resolve('os-browserify/browser'),
           path: require.resolve('path-browserify'),
           process: require.resolve('process/browser'),
@@ -58,6 +61,7 @@ module.exports = class OpenharmonyPolyfillPlugin {
           stream: require.resolve('stream-browserify'),
           string_decoder: require.resolve('string_decoder/'),
           sys: require.resolve('util/'),
+          url: require.resolve('url/'),
           util: require.resolve('util/')
         },
         this.options.excludeAliases

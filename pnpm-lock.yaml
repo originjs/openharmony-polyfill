@@ -50,13 +50,16 @@ importers:
       domain-browser: ^4.19.0
       events: ^3.3.0
       filter-obj: ^2.0.2
-      openharmony-polyfill: ^0.5.0
+      https-browserify: ^1.0.0
+      openharmony-polyfill: ^0.6.0
       os-browserify: ^0.3.0
       path-browserify: ^1.0.1
       process: ^0.11.10
       querystring-es3: ^0.2.1
       stream-browserify: ^3.0.0
+      stream-http: ^3.2.0
       string_decoder: ^1.3.0
+      url: ^0.11.0
       util: ^0.12.4
       webpack: ^5.69.1
     dependencies:
@@ -67,13 +70,16 @@ importers:
       domain-browser: 4.22.0
       events: 3.3.0
       filter-obj: 2.0.2
-      openharmony-polyfill: link:../polyfill
+      https-browserify: 1.0.0
+      openharmony-polyfill: 0.6.1
       os-browserify: 0.3.0
       path-browserify: 1.0.1
       process: 0.11.10
       querystring-es3: 0.2.1
       stream-browserify: 3.0.0
+      stream-http: 3.2.0
       string_decoder: 1.3.0
+      url: 0.11.0
       util: 0.12.4
     devDependencies:
       webpack: 5.69.1
@@ -671,6 +677,10 @@ packages:
     dependencies:
       base64-js: 1.5.1
       ieee754: 1.2.1
+    dev: false
+
+  /builtin-status-codes/3.0.0:
+    resolution: {integrity: sha1-hZgoeOIbmOHGZCXgPQF0eI9Wnug=}
     dev: false
 
   /call-bind/1.0.2:
@@ -1697,6 +1707,10 @@ packages:
       lru-cache: 6.0.0
     dev: true
 
+  /https-browserify/1.0.0:
+    resolution: {integrity: sha1-7AbBDgo0wPL68Zn3/X/Hj//QPHM=}
+    dev: false
+
   /human-signals/2.1.0:
     resolution: {integrity: sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==}
     engines: {node: '>=10.17.0'}
@@ -2293,6 +2307,16 @@ packages:
       mimic-fn: 2.1.0
     dev: true
 
+  /openharmony-polyfill/0.6.1:
+    resolution: {integrity: sha512-YyuFKL3j1SPvD3PjECJseowTaMFx4usKnmcDzsI83Y+fAigfx3+5DP9dWUtPGoQ3ju6B8RSEu5aXBhouWBO6Mg==}
+    engines: {node: '>=12.0.0'}
+    dependencies:
+      buffer: 6.0.3
+      json5: 2.2.0
+      promise: 8.1.0
+      stream-browserify: 3.0.0
+    dev: false
+
   /optionator/0.9.1:
     resolution: {integrity: sha512-74RlY5FCnhq4jRxVUPKDaRwrVNXMqsGsiW6AJw4XK8hmtm10wC0ypZBLw5IIp85NZMr91+qd1RvvENwg7jjRFw==}
     engines: {node: '>= 0.8.0'}
@@ -2495,6 +2519,10 @@ packages:
       safe-buffer: 5.2.1
     dev: false
 
+  /punycode/1.3.2:
+    resolution: {integrity: sha1-llOgNvt8HuQjQvIyXM7v6jkmxI0=}
+    dev: false
+
   /punycode/2.1.1:
     resolution: {integrity: sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==}
     engines: {node: '>=6'}
@@ -2507,6 +2535,12 @@ packages:
   /querystring-es3/0.2.1:
     resolution: {integrity: sha1-nsYfeQSYdXB9aUFFlv2Qek1xHnM=}
     engines: {node: '>=0.4.x'}
+    dev: false
+
+  /querystring/0.2.0:
+    resolution: {integrity: sha1-sgmEkgO7Jd+CDadW50cAWHhSFiA=}
+    engines: {node: '>=0.4.x'}
+    deprecated: The querystring API is considered Legacy. new code should use the URLSearchParams API instead.
     dev: false
 
   /queue-microtask/1.2.3:
@@ -2827,6 +2861,15 @@ packages:
       readable-stream: 3.6.0
     dev: false
 
+  /stream-http/3.2.0:
+    resolution: {integrity: sha512-Oq1bLqisTyK3TSCXpPbT4sdeYNdmyZJv1LxpEm2vu1ZhK89kSE5YXwZc3cWk0MagGaKriBh9mCFbVGtO+vY29A==}
+    dependencies:
+      builtin-status-codes: 3.0.0
+      inherits: 2.0.4
+      readable-stream: 3.6.0
+      xtend: 4.0.2
+    dev: false
+
   /string-argv/0.3.1:
     resolution: {integrity: sha512-a1uQGz7IyVy9YwhqjZIZu1c8JO8dNIe20xBmSS6qu9kv++k3JGzCVmprbNN5Kn+BgzD5E7YYwg1CcjuJMRNsvg==}
     engines: {node: '>=0.6.19'}
@@ -3114,6 +3157,13 @@ packages:
     dependencies:
       punycode: 2.1.1
 
+  /url/0.11.0:
+    resolution: {integrity: sha1-ODjpfPxgUh63PFJajlW/3Z4uKPE=}
+    dependencies:
+      punycode: 1.3.2
+      querystring: 0.2.0
+    dev: false
+
   /util-deprecate/1.0.2:
     resolution: {integrity: sha1-RQ1Nyfpw3nMnYvvS1KKJgUGaDM8=}
 
@@ -3259,7 +3309,6 @@ packages:
   /xtend/4.0.2:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
     engines: {node: '>=0.4'}
-    dev: true
 
   /y18n/5.0.8:
     resolution: {integrity: sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA==}
