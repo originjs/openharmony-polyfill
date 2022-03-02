@@ -240,7 +240,7 @@ class ReadableStreamDefaultReader {
  * Body class provides common methods for Request and Response
  * @see https://fetch.spec.whatwg.org/#body
  */
- export class Body {
+export class Body {
   #body;
   #bodyUsed = false;
   _bodyType;
@@ -353,7 +353,7 @@ class ReadableStreamDefaultReader {
 /**
  * The Request interface of the Fetch API represents a resource request.
  */
- export class Request extends Body {
+export class Request extends Body {
   cache = 'default';
 
   #url;
@@ -377,8 +377,8 @@ class ReadableStreamDefaultReader {
     const inputBody = init.body
       ? init.body
       : input instanceof Request
-        ? input._body
-        : null;
+      ? input._body
+      : null;
     if ((method === 'GET' || method === 'HEAD') && inputBody) {
       throw new TypeError('Body not allowed for GET or HEAD requests');
     }
@@ -471,7 +471,7 @@ class ReadableStreamDefaultReader {
 /**
  * The Response interface of the Fetch API represents the response to a request.
  */
- export class Response extends Body {
+export class Response extends Body {
   #type;
   #status;
   #ok;
@@ -625,7 +625,7 @@ function getHarmonyRequestOptions(request) {
  *    An object containing any custom settings that you want to apply to the request.
  * @returns
  */
-export function fetch(resource, init) {
+export function fetch(resource, init = {}) {
   return new Promise(function (resolve, reject) {
     const request = new Request(resource, init);
     if (request.signal && request.signal.aborted) {

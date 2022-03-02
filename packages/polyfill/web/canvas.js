@@ -1,4 +1,4 @@
-export default class HmCanvas {
+export class HmCanvas {
   constructor(ctx, canvasId, canvasNode) {
     this.ctx = ctx;
     this.canvasId = canvasId;
@@ -46,22 +46,27 @@ export default class HmCanvas {
 
   _initEvent() {
     this.event = {};
-    const eventNames = [{
-      wxName: 'touchstart',
-      ecName: 'mousedown'
-    }, {
-      wxName: 'touchmove',
-      ecName: 'mousemove'
-    }, {
-      wxName: 'touchend',
-      ecName: 'mouseup'
-    }, {
-      wxName: 'touchend',
-      ecName: 'click'
-    }];
+    const eventNames = [
+      {
+        wxName: 'touchstart',
+        ecName: 'mousedown'
+      },
+      {
+        wxName: 'touchmove',
+        ecName: 'mousemove'
+      },
+      {
+        wxName: 'touchend',
+        ecName: 'mouseup'
+      },
+      {
+        wxName: 'touchend',
+        ecName: 'click'
+      }
+    ];
 
-    eventNames.forEach(name => {
-      this.event[name.wxName] = e => {
+    eventNames.forEach((name) => {
+      this.event[name.wxName] = (e) => {
         const touch = e.touches[0];
         this.chart.getZr().handler.dispatch(name.ecName, {
           zrX: touch.localX,
