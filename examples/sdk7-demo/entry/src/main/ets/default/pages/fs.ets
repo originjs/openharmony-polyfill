@@ -1,5 +1,6 @@
 import fileio from '@ohos.fileio';
 import ability_featureAbility from '@ohos.ability.featureAbility'
+var fs = global.fs;
 
 @Entry
 @Component
@@ -17,10 +18,6 @@ struct FSPage {
   rstream;
   private aboutToAppear(): void {
     this.createFiles();
-  }
-
-  private getFs() {
-    return Function("return " + "quire".replace(/^/, "re") + "('fs')")();
   }
 
   async getAppDir() {
@@ -45,7 +42,6 @@ struct FSPage {
   }
 
   async createFiles() {
-    let fs = this.getFs();
     await this.getAppDir()
 
     const file1 = this.appDir + '/test1.text';
@@ -79,7 +75,6 @@ struct FSPage {
     }`;
 
     this.protoFilePath = this.appDir + this.protoFilePath;
-    let fs = this.getFs();
     if (!fs.existsSync(this.protoFilePath)) {
       let fd = fileio.openSync(this.protoFilePath, 0o102, 0o666);
       fileio.writeSync(fd, data);
@@ -99,7 +94,6 @@ struct FSPage {
       })
       Row() {
         Button('Write').onClick(async () => {
-          let fs = this.getFs();
           let fd = fileio.openSync(this.path, 65, 0o666);
           fs.write(fd, this.text, (err, written, string) => {
             if (err) {
@@ -113,7 +107,6 @@ struct FSPage {
         })
         Button('Overwrite').onClick(() => {
           try {
-            let fs = this.getFs();
             fs.writeFileSync(this.path, this.text);
             console.info('File directory :' + this.path);
             this.status = "Overwrite Success!";
@@ -123,7 +116,6 @@ struct FSPage {
           }
         })
         Button('OverwriteAsync').onClick(async () => {
-          let fs = this.getFs();
           fs.writeFile(this.path, this.text, (err) => {
             if (!err) {
               this.status = "Overwrite Success!";
@@ -135,7 +127,6 @@ struct FSPage {
       }
 
         Button('readdir').onClick(() => {
-          let fs = this.getFs();
           fs.readdir(this.appDir,(err,res)=>{
             if(!err){
               this.readText = `${JSON.stringify(res)}`;
@@ -149,7 +140,6 @@ struct FSPage {
       Row() {
         Button('appendSync').onClick(() => {
           try {
-            let fs = this.getFs();
             fs.appendFileSync(this.path, this.text)
             this.status = "appendSync Success!";
           } catch (e) {
@@ -157,7 +147,6 @@ struct FSPage {
           }
         })
         Button('appendAsync').onClick(() => {
-          let fs = this.getFs();
           fs.appendFile(this.path, this.text, (err) => {
             if (!err) {
               this.status = "appendAsync Success!";
@@ -168,7 +157,6 @@ struct FSPage {
         })
         Button('Add to end').onClick(async () => {
           try {
-            let fs = this.getFs();
             fs.writeFileSync(this.path, this.text, { flag: 'a' });
             console.info('File directory :' + this.path);
             this.status = "Add success!";
@@ -182,7 +170,6 @@ struct FSPage {
       Row() {
         Button('Get File Stat(sync)').onClick(() => {
           try {
-            let fs = this.getFs();
             let status = fs.statSync(this.path);
             this.status = "Stat Success(sync)!";
             this.readText = "";
@@ -196,7 +183,6 @@ struct FSPage {
           }
         })
         Button('Get File Stat(async)').onClick(() => {
-          let fs = this.getFs();
           fs.stat(this.path)
             .then((status) => {
               this.status = "Stat Success(async)!";
@@ -219,7 +205,6 @@ struct FSPage {
       Row(){
         Button('Create').onClick(() => {
           try {
-            let fs = this.getFs();
             this.stream = fs.createWriteStream(this.path);
             this.status = "Create Success!";
             this.writeStreamState = this.stream.path;
@@ -244,7 +229,6 @@ struct FSPage {
           }
         })
         Button('Write').onClick(() => {
-          let fs = this.getFs();
           this.stream.write(this.text,(err)=>{
             if(err){
               this.status = "Stream Write Fail!";
@@ -275,7 +259,6 @@ struct FSPage {
         .border({ width: 1, color: "red" }).width('100%')
       Row(){
         Button('Create').onClick(() => {
-          let fs = this.getFs();
           const readPath = this.appDir + '/testfs2.text';
           try {
             let fd = fileio.openSync(readPath, 0o102, 0o666);
@@ -285,7 +268,6 @@ struct FSPage {
             throw('Read File create fail!')
           }
           try{
-            let fs = this.getFs();
             this.rstream = fs.createReadStream(readPath);
             this.status = "Create Readstream Success!";
             this.readStreamState = this.rstream.path;
@@ -307,7 +289,6 @@ struct FSPage {
           }
         })
         Button('Pipe').onClick(() => {
-          let fs = this.getFs();
           try {
             this.rstream.pipe(this.stream, { end: false });
             this.status = "Pipe Stream Success!";
@@ -317,7 +298,6 @@ struct FSPage {
           }
         })
         Button('Read').onClick(()=>{
-          let fs = this.getFs();
           let chunks = '';
           const fileToBuffer = (readStream, cb) => {
             readStream.on('error', err => {
@@ -358,7 +338,6 @@ struct FSPage {
       Row(){
         Button('Delete file').onClick(() => {
           try {
-            let fs = this.getFs();
             fs.unlinkSync(this.path);
             this.status = "Delete Success!";
           } catch (err) {
@@ -377,7 +356,6 @@ struct FSPage {
       Row(){
         Button('Read File 1').onClick(async () => {
           try {
-            let fs = this.getFs();
             this.readText = fs.readFileSync(this.path, { encoding: 'utf8', flag: 'r' })
             //this.readText = fileio.readTextSync(this.path);
             this.status = "Read file Success!";
@@ -388,7 +366,6 @@ struct FSPage {
         }).alignSelf(ItemAlign.Center)
         Button('Read File 2').onClick(async () => {
           try {
-            let fs = this.getFs();
             this.readText = fs.readFileSync(this.appDir+'/testfs2.text', { encoding: 'utf8', flag: 'r' })
             //this.readText = fileio.readTextSync(this.appDir+'/testfs2.text');
             this.status = "Read file Success!";
@@ -401,7 +378,6 @@ struct FSPage {
 
       Button('Read Dir').onClick(async () => {
         try {
-          let fs = this.getFs();
           const result1 = fs.readdirSync(this.appDir, { withFileTypes: true });
           console.log(JSON.stringify(result1));
           this.readText = `${JSON.stringify(result1)}`;
@@ -414,7 +390,6 @@ struct FSPage {
       }).alignSelf(ItemAlign.Center)
 
       Button('create folder sync').onClick(() => {
-        const fs = this.getFs();
         const path = `${this.appDir}/dir1/dir2/dir3/dir4`;
         try {
           const returnValue = fs.mkdirSync(path, { recursive: true });
@@ -425,7 +400,6 @@ struct FSPage {
       }).alignSelf(ItemAlign.Center)
 
       Button('create folder async').onClick(() => {
-        const fs = this.getFs();
         const path = `${this.appDir}/dir11/dir22/dir33/dir44`;
         fs.mkdir(path, { recursive: true }, (err, returnValue) => {
           if (!err) {

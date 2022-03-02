@@ -1,4 +1,4 @@
-import util from '@ohos.util';
+//import util from '@ohos.util';
 @Entry
 @Component
 struct TextPage {
