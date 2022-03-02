@@ -2,6 +2,7 @@ import axios from 'axios'
 import {LambdaClient, InvokeCommand} from "@aws-sdk/client-lambda";
 import {CognitoIdentityClient} from "@aws-sdk/client-cognito-identity";
 import {fromCognitoIdentityPool} from "@aws-sdk/credential-provider-cognito-identity";
+import { fetch, TextEncoder,TextDecoder } from 'openharmony-polyfill';
 
 @Entry
 @Component
