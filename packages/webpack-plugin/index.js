@@ -25,6 +25,7 @@ module.exports = class OpenharmonyPolyfillPlugin {
             process: require.resolve('process/browser'),
             crypto: ['openharmony-polyfill/web/crypto', 'crypto'],
             fetch: ['openharmony-polyfill/web/fetch', 'fetch'],
+            navigator: ['openharmony-polyfill/web/navigator', 'navigator'],
             XMLHttpRequest: ['openharmony-polyfill/web/xhr', 'XMLHttpRequest'],
             TextDecoder: ['openharmony-polyfill/web/encoding', 'TextDecoder'],
             TextEncoder: ['openharmony-polyfill/web/encoding', 'TextEncoder'],

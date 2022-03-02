@@ -24,9 +24,6 @@ if (TextEncoder && !globalThis.TextEncoder) {
 import { XMLHttpRequest } from './xhr';
 if (!globalThis.XMLHttpRequest) {
   globalThis.XMLHttpRequest = XMLHttpRequest;
-  globalThis.navigator = {
-    product: 'NS'
-  };
 }
 
 /**
@@ -76,3 +73,11 @@ globalThis.HmCanvas = HmCanvas;
 import { LocalStorage } from './storage';
 LocalStorage.init();
 globalThis.localStorage = globalThis.localStorage ?? LocalStorage;
+
+/**
+ * polyfill for Navigator
+ */
+import { navigator } from './navigator';
+if (!globalThis.navigator) {
+  globalThis.navigator = navigator;
+}
