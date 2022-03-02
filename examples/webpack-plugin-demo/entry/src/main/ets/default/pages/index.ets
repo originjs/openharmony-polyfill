@@ -10,6 +10,7 @@ class PageData {
 struct Index {
   private pageItems: PageData[] = [
     { name: 'Checksum', page: 'pages/checksum' },
+    { name: 'Network', page: 'pages/network' },
     { name: 'fast-xml-parser', page: 'pages/xmlparser' },
   ]
 
