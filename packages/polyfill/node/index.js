@@ -1,4 +1,4 @@
-import harmonyFS from './fs';
+import * as harmonyFS from './fs';
 
 if (!globalThis.fs) {
   globalThis.harmonyFS = harmonyFS;

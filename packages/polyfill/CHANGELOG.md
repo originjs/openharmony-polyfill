@@ -1,3 +1,22 @@
+# [0.6.0](https://github.com/originjs/openharmony-polyfill/compare/v0.5.0...v0.6.0) (2022-02-25)
+
+
+### Bug Fixes
+
+* import path error ([ae589a8](https://github.com/originjs/openharmony-polyfill/commit/ae589a829dfaab3cc10be7d0b9b85a7237f06504))
+* Resolve problems caused by XMLHttpRequest type inheritance ([fc7c277](https://github.com/originjs/openharmony-polyfill/commit/fc7c27714573e7bcce9ab527226ff9aaa188cb2d))
+
+
+### Features
+
+* add fs.appendFile ([ce55794](https://github.com/originjs/openharmony-polyfill/commit/ce5579412714d24efa4d0d2d1e23d9bf30d963b5))
+* add fs.appendFileSync ([88c408f](https://github.com/originjs/openharmony-polyfill/commit/88c408f08aa42f2c814f52d6bb341681b0dc3bbb))
+* add fs.close & fs.closeSync ([64523fd](https://github.com/originjs/openharmony-polyfill/commit/64523fd262e06761327cb465fe58a63e2a4427e1))
+* add fs.open & fs.readdir ([#19](https://github.com/originjs/openharmony-polyfill/issues/19)) ([92c6232](https://github.com/originjs/openharmony-polyfill/commit/92c62326d682949e9e0ad0749c7d983b2cb39b04))
+* support fs in webpack plugin ([2888fc5](https://github.com/originjs/openharmony-polyfill/commit/2888fc5c41699c9af811a2f4161993b8f99b8b36))
+
+
+
 # [0.5.0](https://github.com/originjs/openharmony-polyfill/compare/v0.4.0...v0.5.0) (2022-02-19)
 
 

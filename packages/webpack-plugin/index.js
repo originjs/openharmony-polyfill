@@ -14,6 +14,10 @@ module.exports = class OpenharmonyPolyfillPlugin {
 
   apply(compiler) {
     compiler.options.plugins.push(
+      /**
+       * Automatically load modules instead of having to import or require them.
+       * @see https://webpack.js.org/plugins/provide-plugin/
+       */
       new ProvidePlugin(
         excludeObjectKeys(
           {
@@ -32,6 +36,10 @@ module.exports = class OpenharmonyPolyfillPlugin {
       )
     );
 
+    /**
+     * Redirect module requests when normal resolving fails.
+     * @see https://webpack.js.org/configuration/resolve/#resolvefallback
+     */
     compiler.options.resolve.fallback = {
       ...excludeObjectKeys(
         {
@@ -43,6 +51,9 @@ module.exports = class OpenharmonyPolyfillPlugin {
           crypto: require.resolve('crypto-browserify'),
           domain: require.resolve('domain-browser'),
           events: require.resolve('events/'),
+          // TODO: rewrite with openharmony http api
+          http: require.resolve('stream-http'),
+          https: require.resolve('https-browserify'),
           os: require.resolve('os-browserify/browser'),
           path: require.resolve('path-browserify'),
           process: require.resolve('process/browser'),
@@ -50,6 +61,7 @@ module.exports = class OpenharmonyPolyfillPlugin {
           stream: require.resolve('stream-browserify'),
           string_decoder: require.resolve('string_decoder/'),
           sys: require.resolve('util/'),
+          url: require.resolve('url/'),
           util: require.resolve('util/')
         },
         this.options.excludeAliases
