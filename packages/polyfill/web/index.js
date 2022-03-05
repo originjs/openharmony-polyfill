@@ -53,15 +53,6 @@ if (!globalThis.crypto) {
 }
 
 /**
- * polyfill for WebSocket
- */
-import { WebSocket as _WebSocket } from './websocket';
-if (!globalThis.WebSocket) {
-  globalThis.WebSocket = _WebSocket;
-  WebSocket = _WebSocket;
-}
-
-/**
  * polyfill for Canvas
  */
 import { HmCanvas } from './canvas';
