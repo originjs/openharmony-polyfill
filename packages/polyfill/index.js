@@ -8,6 +8,5 @@ export { TextDecoder, TextEncoder } from './web/encoding';
 export { XMLHttpRequest } from './web/xhr';
 export { fetch, Headers, Request, Response } from './web/fetch';
 export { crypto } from './web/crypto';
-export { WebSocket } from './web/websocket';
 export { LocalStorage } from './web/storage';
 export { navigator } from './web/navigator';
