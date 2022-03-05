@@ -1,6 +1,5 @@
 import fileio from '@ohos.fileio';
 import { Writable, Readable } from 'stream-browserify';
-//globalThis.process = require('process');
 
 const FILE_TYPE = { File: 1, Dirent: 2 };
 //type BufferEncoding = 'ascii' | 'utf8' | 'utf-8' | 'utf16le' | 'ucs2' | 'ucs-2' | 'base64' | 'base64url' | 'latin1' | 'binary' | 'hex';
